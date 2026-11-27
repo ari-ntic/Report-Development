@@ -60,7 +60,7 @@
     const msg = event.data;
     if (!msg || msg.channel !== channel || msg.protocol !== 'ntic-report-v1') return;
     if (msg.type === 'ready') {
-      if (peer || !event.source || !/^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/.test(event.origin)) return;
+      if (peer || !event.source || !new RegExp('^https://[a-z0-9-]+-script\\.googleusercontent\\.com$').test(event.origin)) return;
       if (msg.version !== config.version) { rejectReady(Error('Report connection version mismatch')); return; }
       peer = event.source; peerOrigin = event.origin; clearTimeout(connectTimer);
       document.getElementById('reportConnectionNotice')?.remove(); resolveReady(); return;
@@ -71,7 +71,7 @@
     if (msg.ok) job.resolve(msg.result);
     else job.reject(Object.assign(Error(msg.error?.message || 'Report request failed'), {code:msg.error?.code}));
   });
-  async function transport(method, args, token) {
+  async function transport(method, args, token, onSent) {
     if (!allowed.has(method)) throw Error('Unsupported report function: '+method);
     if (document.readyState === 'loading') await new Promise(resolve=>document.addEventListener('DOMContentLoaded',resolve,{once:true}));
     connect();
@@ -83,11 +83,13 @@
         reject(Error('結果を確認できませんでした。送信内容を保持してから再試行してください。 / Result not confirmed. Keep your draft and retry.'));
       }, config.requestTimeoutMs);
       pending.set(id, {resolve,reject,timer});
-      try { peer.postMessage({protocol:'ntic-report-v1',type:'call',channel,id,method,args,token},peerOrigin); }
-      catch (error) { clearTimeout(timer);pending.delete(id);reject(error); }
+      try {
+        peer.postMessage({protocol:'ntic-report-v1',type:'call',channel,id,method,args,token},peerOrigin);
+        if (typeof onSent === 'function') onSent();
+      } catch (error) { clearTimeout(timer);pending.delete(id);reject(error); }
     });
   }
-  window.ReportAuth.setValidator(token=>transport('getReportSession',[],token));
+  window.ReportAuth.setValidator((token,onSent)=>transport('getReportSession',[],token,onSent));
   window.ReportAuth.setAccessTransport?.((method,args,token)=>transport(method,args,token));
   async function invoke(method,args){
     const token=await window.ReportAuth.token();
