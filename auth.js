@@ -21,7 +21,7 @@
     currentUser=user;token=sessionToken;expires=Number(expiresAt)||0;
     try{localStorage.setItem('nticReportSession',sessionToken);}catch(_){}
     pendingToken='';clearTimeout(pollTimer);overlay().querySelector('#reportRequestAccess').hidden=true;
-    const box=overlay();box.hidden=true;box.style.display='none';document.querySelector('.container')?.removeAttribute('inert');
+    const box=overlay();box.hidden=true;box.style.display='none';document.querySelector('.container')?.removeAttribute('inert');document.querySelector('.container')?.style.removeProperty('visibility');
     for(const job of waiters.splice(0))job.resolve(token);
     document.getElementById('singleInput')?.focus();
     window.dispatchEvent(new CustomEvent('report-login',{detail:{email:user.email,role:user.role}}));
@@ -108,14 +108,14 @@
   function readSavedSession(){try{return localStorage.getItem('nticReportSession')||'';}catch(_){return '';}}
   function restoreSavedSession(id,force){
     const saved=readSavedSession();if(!saved)return loadGoogleSignIn(id);
-    if(!validator){message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);return;}
+    if(!validator)return;
     if(!force&&restoreStartedAt&&Date.now()-restoreStartedAt<12000)return;
     const attempt=++restoreGeneration;restoreStartedAt=Date.now();clearTimeout(restoreDeadlineTimer);
     restoreDeadlineTimer=setTimeout(()=>{
       if(attempt!==restoreGeneration)return;restoreStartedAt=0;restoreGeneration++;lock();loadGoogleSignIn(id);
       message('保存されたログインを確認できませんでした。接続を確認して、もう一度お試しください。 / Could not check the saved sign-in. Check the connection and try again.',true);
     },12000);
-    Promise.resolve().then(()=>validator(saved,()=>{if(attempt===restoreGeneration)message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);})).then(function(user){
+    Promise.resolve().then(()=>validator(saved)).then(function(user){
       if(attempt!==restoreGeneration)return;clearTimeout(restoreDeadlineTimer);restoreStartedAt=0;
       if(user&&user.sessionToken&&user.role!=='pending'){finishSignIn(user,user.sessionToken,user.expiresAt);return;}
       clearSavedSession();lock();loadGoogleSignIn(id);
@@ -134,13 +134,13 @@
     location.reload();
   }
   function initialize(){
-    authStarted=true;lock();
+    authStarted=true;document.querySelector('.container')?.setAttribute('inert','');document.querySelector('.container')?.style.setProperty('visibility','hidden');
     authClientId=window.REPORT_CONFIG?.googleClientId||'';
     if(!authClientId){message('Googleログインはまだ設定されていません。管理者にお問い合わせください。 / Google sign-in is not configured. Please contact the administrator.',true);return;}
     if(readSavedSession()){
       if(validator)restoreSavedSession(authClientId,false);
       else{
-        message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);
+        /* keep the page blank while session validation runs */
         clearTimeout(validatorWaitTimer);validatorWaitTimer=setTimeout(()=>{
           if(validator||!readSavedSession())return;lock();loadGoogleSignIn(authClientId);
           message('保存されたログインを確認できませんでした。もう一度お試しください。 / Could not check the saved sign-in. Please try again.',true);
