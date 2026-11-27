@@ -8062,19 +8062,3 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.addEventListener('pagehide',unlock)
 })();
 </script>
-
-
-<style id="dev-editor-delete-keyboard-restore-v2">
-@media(max-width:600px){#packageManagerOverlay.keyboard-open .package-footer>#packageTrashReportButton{display:none!important;visibility:hidden!important;pointer-events:none!important}}
-</style>
-<script id="dev-editor-delete-keyboard-detect-v2">
-(function(){
- var overlay=document.getElementById("packageManagerOverlay");if(!overlay||overlay.__deleteKeyboardV2)return;overlay.__deleteKeyboardV2=true;
- var vv=window.visualViewport,baseline=vv?vv.height:window.innerHeight,timer=0;
- function mobile(){return window.matchMedia("(max-width:600px)").matches}
- function fieldFocused(){var a=document.activeElement;return !!(a&&overlay.contains(a)&&a.matches("input:not([type=button]):not([type=submit]),textarea,select,[contenteditable=true]"))}
- function sync(){if(!mobile()||overlay.hidden||overlay.getAttribute("aria-hidden")==="true"){overlay.classList.remove("keyboard-open");if(!fieldFocused())baseline=vv?vv.height:window.innerHeight;return}var height=vv?vv.height:window.innerHeight;var focused=fieldFocused();if(!focused)baseline=Math.max(height,window.innerHeight);var threshold=Math.max(120,baseline*.16);overlay.classList.toggle("keyboard-open",focused&&baseline-height>threshold)}
- function schedule(){clearTimeout(timer);sync();timer=setTimeout(sync,180)}
- overlay.addEventListener("focusin",schedule,true);overlay.addEventListener("focusout",function(){setTimeout(schedule,80)},true);window.addEventListener("resize",schedule);if(vv){vv.addEventListener("resize",schedule);vv.addEventListener("scroll",schedule)}new MutationObserver(schedule).observe(overlay,{attributes:true,attributeFilter:["hidden","class","aria-hidden"]});sync();
-})();
-</script>
