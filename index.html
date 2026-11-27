@@ -8064,20 +8064,7 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
 </script>
 
 
-<script id="dev-modal-background-scroll-guard-v1">
-(function(){
- if(window.__devModalBackgroundScrollGuardV1)return;window.__devModalBackgroundScrollGuardV1=true;
- var selector='[id*="Overlay"],[id*="overlay"],[id*="Modal"],[id*="modal"],[role="dialog"],[aria-modal="true"],dialog[open],.modal,.modal-backdrop,.modal-overlay,.gallery-modal-overlay,.photo-viewer-overlay';
- function visible(el){var s=getComputedStyle(el);return !!(el&&!el.hidden&&el.getAttribute("aria-hidden")!=="true"&&s.display!=="none"&&s.visibility!=="hidden"&&el.getClientRects().length)}
- function topModal(target){var all=Array.from(document.querySelectorAll(selector)).filter(visible);if(!all.length)return null;var inside=all.filter(function(el){return target&&el.contains(target)});var list=inside.length?inside:all;return list[list.length-1]}
- function scrollable(target,modal){var el=target&&target.nodeType===1?target:target&&target.parentElement;while(el&&modal.contains(el)){var s=getComputedStyle(el);if(/^(auto|scroll|overlay)$/.test(s.overflowY)&&el.scrollHeight>el.clientHeight+1)return el;if(el===modal)break;el=el.parentElement}return null}
- function atEdge(el,delta){var max=el.scrollHeight-el.clientHeight;if(delta<0)return el.scrollTop<=0;if(delta>0)return el.scrollTop>=max-1;return true}
- document.addEventListener("wheel",function(e){var modal=topModal(e.target);if(!modal)return;var sc=modal.contains(e.target)?scrollable(e.target,modal):null;if(!sc||!e.deltaY||atEdge(sc,e.deltaY))e.preventDefault()},{capture:true,passive:false});
- var lastY=null;document.addEventListener("touchstart",function(e){lastY=e.touches.length===1?e.touches[0].clientY:null},{capture:true,passive:true});
- document.addEventListener("touchmove",function(e){var modal=topModal(e.target);if(!modal)return;if(e.touches.length!==1||!e.cancelable){lastY=null;return}var y=e.touches[0].clientY,delta=lastY===null?0:lastY-y;lastY=y;var sc=modal.contains(e.target)?scrollable(e.target,modal):null;if(!sc||!delta||atEdge(sc,delta))e.preventDefault()},{capture:true,passive:false});
- document.addEventListener("touchend",function(){lastY=null},{capture:true,passive:true});document.addEventListener("touchcancel",function(){lastY=null},{capture:true,passive:true});
-})();
-</script>
+
 
 <script id="dev-close-route-and-header-refresh">
 (function(){
