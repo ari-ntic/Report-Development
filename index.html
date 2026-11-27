@@ -8120,3 +8120,11 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
 #reportLogin{touch-action:pan-y!important;overscroll-behavior-y:auto!important}
 </style>
 </body>
+
+
+<style id="dev-editor-textarea-scroll-handoff">
+@media (max-width:600px) {
+  /* Remove the textarea momentum bounce so the next swipe can reach the modal sooner. */
+  #packageManagerOverlay textarea { -webkit-overflow-scrolling:auto !important; overscroll-behavior-y:auto !important; }
+}
+</style>
