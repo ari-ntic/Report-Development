@@ -104,15 +104,14 @@
     }
     reload.onclick=refresh;await refresh();
   }
-  let restoreGeneration=0,restoreStartedAt=0,restoreDeadlineTimer=0,hiddenSince=0;
+  let restoreGeneration=0,restoreStartedAt=0,restoreDeadlineTimer=0,hiddenSince=0,resumeReloadPending=false;
   function readSavedSession(){try{return localStorage.getItem('nticReportSession')||'';}catch(_){return '';}}
   function restoreSavedSession(id,force){
     const saved=readSavedSession();if(!saved||!validator){loadGoogleSignIn(id);return;}
     if(!force&&restoreStartedAt&&Date.now()-restoreStartedAt<12000)return;
     const attempt=++restoreGeneration;restoreStartedAt=Date.now();clearTimeout(restoreDeadlineTimer);
-    message('セッションを確認しています… / Restoring your session…',false,true);
     restoreDeadlineTimer=setTimeout(()=>{if(attempt!==restoreGeneration)return;restoreStartedAt=0;message('セッションを確認できません。もう一度お試しください。 / Session check timed out. Please try again.',true);},12000);
-    Promise.resolve().then(()=>validator(saved)).then(function(user){
+    Promise.resolve().then(()=>validator(saved,()=>{if(attempt===restoreGeneration)message('セッションを確認しています… / Restoring your session…',false,true);})).then(function(user){
       if(attempt!==restoreGeneration)return;clearTimeout(restoreDeadlineTimer);restoreStartedAt=0;
       if(user&&user.sessionToken&&user.role!=='pending'){finishSignIn(user,user.sessionToken,user.expiresAt);return;}
       clearSavedSession();loadGoogleSignIn(id);
@@ -125,8 +124,9 @@
   function resumeSessionCheck(){
     if(document.hidden||token&&expires>Date.now()+30000)return;
     const box=document.getElementById('reportLogin');if(box&&box.hidden)return;
-    const saved=readSavedSession();if(!saved)return;
-    const id=window.REPORT_CONFIG?.googleClientId;if(id)restoreSavedSession(id,true);
+    if(!readSavedSession()||resumeReloadPending)return;
+    resumeReloadPending=true;
+    location.reload();
   }
   function initialize(){
     lock();
