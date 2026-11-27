@@ -104,21 +104,26 @@
     }
     reload.onclick=refresh;await refresh();
   }
-  let restoreGeneration=0,restoreStartedAt=0,restoreDeadlineTimer=0,hiddenSince=0,resumeReloadPending=false;
+  let restoreGeneration=0,restoreStartedAt=0,restoreDeadlineTimer=0,hiddenSince=0,resumeReloadPending=false,authStarted=false,authClientId='',validatorWaitTimer=0;
   function readSavedSession(){try{return localStorage.getItem('nticReportSession')||'';}catch(_){return '';}}
   function restoreSavedSession(id,force){
-    const saved=readSavedSession();if(!saved||!validator){loadGoogleSignIn(id);return;}
+    const saved=readSavedSession();if(!saved)return loadGoogleSignIn(id);
+    if(!validator){message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);return;}
     if(!force&&restoreStartedAt&&Date.now()-restoreStartedAt<12000)return;
     const attempt=++restoreGeneration;restoreStartedAt=Date.now();clearTimeout(restoreDeadlineTimer);
-    restoreDeadlineTimer=setTimeout(()=>{if(attempt!==restoreGeneration)return;restoreStartedAt=0;message('セッションを確認できません。もう一度お試しください。 / Session check timed out. Please try again.',true);},12000);
-    Promise.resolve().then(()=>validator(saved,()=>{if(attempt===restoreGeneration)message('セッションを確認しています… / Restoring your session…',false,true);})).then(function(user){
+    restoreDeadlineTimer=setTimeout(()=>{
+      if(attempt!==restoreGeneration)return;restoreStartedAt=0;restoreGeneration++;lock();loadGoogleSignIn(id);
+      message('保存されたログインを確認できませんでした。接続を確認して、もう一度お試しください。 / Could not check the saved sign-in. Check the connection and try again.',true);
+    },12000);
+    Promise.resolve().then(()=>validator(saved,()=>{if(attempt===restoreGeneration)message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);})).then(function(user){
       if(attempt!==restoreGeneration)return;clearTimeout(restoreDeadlineTimer);restoreStartedAt=0;
       if(user&&user.sessionToken&&user.role!=='pending'){finishSignIn(user,user.sessionToken,user.expiresAt);return;}
-      clearSavedSession();loadGoogleSignIn(id);
+      clearSavedSession();lock();loadGoogleSignIn(id);
     }).catch(function(error){
       if(attempt!==restoreGeneration)return;clearTimeout(restoreDeadlineTimer);restoreStartedAt=0;
-      if(/AUTH_(?:INVALID|EXPIRED|REQUIRED)|ACCESS_DENIED/.test(String(error&&error.message||error))){clearSavedSession();loadGoogleSignIn(id);return;}
-      message('セッションを確認できません。接続を確認して、もう一度お試しください。 / Could not restore your session. Check the connection and try again.',true);
+      if(/AUTH_(?:INVALID|EXPIRED|REQUIRED)|ACCESS_DENIED/.test(String(error&&error.message||error))){clearSavedSession();lock();loadGoogleSignIn(id);return;}
+      lock();loadGoogleSignIn(id);
+      message('Sesi tersimpan belum dapat diperiksa. Periksa koneksi, lalu coba masuk lagi. / Could not check the saved session. Check the connection and sign in again.',true);
     });
   }
   function resumeSessionCheck(){
@@ -129,11 +134,21 @@
     location.reload();
   }
   function initialize(){
-    lock();
-    const id=window.REPORT_CONFIG?.googleClientId;
-    if(!id){message('Googleログインはまだ設定されていません。管理者にお問い合わせください。 / Google sign-in is not configured. Please contact the administrator.',true);return;}
-    if(readSavedSession()&&validator){restoreSavedSession(id,false);return;}
-    loadGoogleSignIn(id);
+    authStarted=true;lock();
+    authClientId=window.REPORT_CONFIG?.googleClientId||'';
+    if(!authClientId){message('Googleログインはまだ設定されていません。管理者にお問い合わせください。 / Google sign-in is not configured. Please contact the administrator.',true);return;}
+    if(readSavedSession()){
+      if(validator)restoreSavedSession(authClientId,false);
+      else{
+        message('保存されたログインを確認しています… / Checking your saved sign-in…',false,true);
+        clearTimeout(validatorWaitTimer);validatorWaitTimer=setTimeout(()=>{
+          if(validator||!readSavedSession())return;lock();loadGoogleSignIn(authClientId);
+          message('保存されたログインを確認できませんでした。もう一度お試しください。 / Could not check the saved sign-in. Please try again.',true);
+        },8000);
+      }
+      return;
+    }
+    loadGoogleSignIn(authClientId);
   }
   function loadGoogleSignIn(id){
     if(initializing)return;message('',false,false);initializing=true;
@@ -146,9 +161,20 @@
     };document.head.append(script);
   }
   window.ReportAuth={
-    setValidator(fn){validator=fn;},
+    setValidator(fn){validator=fn;if(validator){clearTimeout(validatorWaitTimer);if(authStarted&&readSavedSession()&&authClientId&&!token)restoreSavedSession(authClientId,false);}},
     setAccessTransport(fn){accessTransport=fn;},
-    token(){if(token&&expires>Date.now()+30000)return Promise.resolve(token);clearSavedSession();lock();return new Promise((resolve,reject)=>waiters.push({resolve,reject}));},
+    token(){
+      if(token&&expires>Date.now()+30000)return Promise.resolve(token);
+      const pending=new Promise((resolve,reject)=>waiters.push({resolve,reject}));
+      const saved=readSavedSession();
+      if(saved){
+        if(validator&&authClientId)restoreSavedSession(authClientId,false);
+        else if(!authStarted)initialize();
+        return pending;
+      }
+      lock();if(authClientId)loadGoogleSignIn(authClientId);
+      return pending;
+    },
     invalidate(){clearSavedSession();lock();message('ログインし直してください。 / Please sign in again.');},
     async signOut(){const previous=token;try{if(previous&&accessTransport)await accessTransport('logoutReportSession',[],previous);}catch(_){}clearSavedSession();google.accounts?.id?.disableAutoSelect();lock();location.reload();}
   };
