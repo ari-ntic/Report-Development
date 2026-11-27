@@ -8039,3 +8039,26 @@ body{background-color:#f1f5f9!important}
 <style id="dev-mobile-delete-match-save">@media(max-width:600px){#packageManagerOverlay .package-footer>#packageManagerClose,#packageManagerOverlay .package-footer>#editorSave,#packageManagerOverlay .package-footer>#packageTrashReportButton{height:40px!important;min-height:40px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}#packageManagerOverlay #packageTrashReportButton{padding:8px 12px!important;white-space:normal!important;line-height:1.3!important}}</style>
 
 <style id="dev-editor-footer-waits-for-complete-set">@media(max-width:600px){#packageManagerOverlay .package-footer:not(:has(#editorSave)){display:none!important}}</style>
+
+<style id="dev-global-modal-scroll-lock-v1">
+html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:none!important}
+#packageManagerOverlay .package-scroll-body{overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important}
+@media(max-width:600px){#packageManagerOverlay.keyboard-open #packageTrashReportButton{display:none!important;visibility:hidden!important;pointer-events:none!important}}
+</style>
+<script id="dev-global-modal-scroll-lock-v1-script">
+(function(){
+ var locked=false,savedY=0,restorePage=false,originals={},html=document.documentElement,body=document.body;
+ var modalSelector='[id*="Overlay"],[role="dialog"],.modal-overlay,.gallery-modal-overlay';
+ function remember(el,p){return {value:el.style.getPropertyValue(p),priority:el.style.getPropertyPriority(p)}}
+ function put(el,p,v){el.style.setProperty(p,v,'important')}
+ function restore(el,p,o){if(!el)return;if(o.value)el.style.setProperty(p,o.value,o.priority);else el.style.removeProperty(p)}
+ function visible(el){return !!(el&&!el.hidden&&el.getAttribute('aria-hidden')!=='true'&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getClientRects().length)}
+ function anyModalOpen(){return Array.from(document.querySelectorAll(modalSelector)).some(visible)}
+ function lock(){if(locked||!body)return;locked=true;savedY=window.pageYOffset||window.scrollY||0;originals.htmlOverflow=remember(html,'overflow');originals.bodyOverflow=remember(body,'overflow');originals.htmlClass=html.classList.contains('dev-modal-scroll-locked');originals.bodyClass=body.classList.contains('dev-modal-scroll-locked');restorePage=getComputedStyle(body).position!=='fixed';if(restorePage){originals.position=remember(body,'position');originals.top=remember(body,'top');originals.left=remember(body,'left');originals.right=remember(body,'right');originals.width=remember(body,'width');put(body,'position','fixed');put(body,'top',(-savedY)+'px');put(body,'left','0');put(body,'right','0');put(body,'width','100%')}put(body,'overflow','hidden');put(html,'overflow','hidden');html.classList.add('dev-modal-scroll-locked');body.classList.add('dev-modal-scroll-locked')}
+ function unlock(){if(!locked)return;locked=false;restore(body,'overflow',originals.bodyOverflow);restore(html,'overflow',originals.htmlOverflow);if(!originals.bodyClass)body.classList.remove('dev-modal-scroll-locked');if(!originals.htmlClass)html.classList.remove('dev-modal-scroll-locked');if(restorePage){restore(body,'position',originals.position);restore(body,'top',originals.top);restore(body,'left',originals.left);restore(body,'right',originals.right);restore(body,'width',originals.width);window.scrollTo(0,savedY)}}
+ function sync(){if(anyModalOpen())lock();else unlock();var editor=document.getElementById('packageManagerOverlay');if(!editor)return;var active=document.activeElement,editing=!!(active&&editor.contains(active)&&active.matches('input:not([type=button]):not([type=submit]),textarea,[contenteditable=true]'));var vv=window.visualViewport,mobile=window.matchMedia('(max-width:600px)').matches;var keyboard=!!(vv&&window.innerHeight-vv.height>Math.max(110,window.innerHeight*.16));editor.classList.toggle('keyboard-open',!!(visible(editor)&&mobile&&editing&&keyboard))}
+ var pending=false;function schedule(){if(pending)return;pending=true;setTimeout(function(){pending=false;sync()},80)}
+ function start(){body=document.body;if(!body)return;var observer=new MutationObserver(schedule);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','style','class','aria-hidden']});document.addEventListener('focusin',schedule,true);document.addEventListener('focusout',schedule,true);window.addEventListener('resize',schedule);if(window.visualViewport){window.visualViewport.addEventListener('resize',schedule);window.visualViewport.addEventListener('scroll',schedule)}sync()}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.addEventListener('pagehide',unlock)
+})();
+</script>
