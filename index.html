@@ -3,10 +3,26 @@
 <html lang="ja">
 <head>
   <script src="config.js?v=6"></script>
-  <script src="auth.js?v=27"></script>
+  <script src="auth.js?v=28"></script>
   <script src="rpc.js?v=4"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script id="dev-direct-route-cover">
+(function(){
+  var initial=new URLSearchParams(location.search).get('view');
+  if(!['report','reports','photo','photos','todo'].includes(initial))return;
+  var style=document.createElement('style');style.textContent='#devDirectRouteCover{position:fixed;inset:0;z-index:25000;display:grid;place-items:center;background:#f1f5f9;color:#334155;font:600 14px/1.4 system-ui,sans-serif}#devDirectRouteCover .route-spin{width:20px;height:20px;border:2px solid #cbd5e1;border-top-color:#2563eb;border-radius:50%;animation:devRouteSpin .8s linear infinite}@keyframes devRouteSpin{to{transform:rotate(360deg)}}';document.head.append(style);
+  var cover=document.createElement('div');cover.id='devDirectRouteCover';cover.setAttribute('role','status');cover.innerHTML='<div style="display:flex;align-items:center;gap:10px"><span class="route-spin" aria-hidden="true"></span><span>ページを開いています…</span></div>';document.documentElement.append(cover);
+  var timer=setInterval(function(){
+    var view=new URLSearchParams(location.search).get('view')||initial;
+    var targets={report:['packageManagerOverlay','reportsModalOverlay'],reports:['reportsModalOverlay'],photo:['photoViewerOverlay'],photos:['galleryModalOverlay'],todo:['todoModalOverlay']}[view]||[];
+    var ready=targets.some(function(id){var el=document.getElementById(id);return !!(el&&!el.hidden&&el.getAttribute('aria-hidden')!=='true'&&getComputedStyle(el).display!=='none'&&el.getClientRects().length);});
+    if(ready){clearInterval(timer);cover.remove();style.remove();}
+  },180);
+  setTimeout(function(){if(!cover.isConnected)return;cover.querySelector('.route-spin').style.display='none';cover.querySelector('span:last-child').textContent='ページの接続に時間がかかっています。更新して再試行してください。';cover.onclick=function(){location.reload();};},20000);
+})();
+</script>
+
   <title>DEVELOPMENT 報告記録</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
@@ -8016,3 +8032,5 @@ body{background-color:#f1f5f9!important}
  #packageManagerOverlay.keyboard-open #packageTrashReportButton{display:none!important}
 }
 </style>
+
+<style id="dev-editor-delete-bottom-gap">@media(max-width:600px){#packageManagerOverlay .package-dialog{padding-bottom:0!important}#packageManagerOverlay .package-footer{padding-bottom:6px!important}#packageManagerOverlay.keyboard-open .package-footer{padding-bottom:6px!important}}</style>
