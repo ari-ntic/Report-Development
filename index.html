@@ -8078,3 +8078,42 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
  document.addEventListener("touchend",function(){lastY=null},{capture:true,passive:true});document.addEventListener("touchcancel",function(){lastY=null},{capture:true,passive:true});
 })();
 </script>
+
+<script id="dev-close-route-and-header-refresh">
+(function(){
+  var close=window.closePackageManager;
+  if(typeof close==='function'&&!close.__devRouteAware){
+    var wrapped=function(){
+      var editor=document.getElementById('packageManagerOverlay');
+      var wasOpen=!!(editor&&!editor.hidden);
+      var result=close.apply(this,arguments);
+      if(wasOpen){
+        var url=new URL(window.location.href);
+        if(url.searchParams.get('view')==='report'){
+          if(url.searchParams.get('returnTo')==='reports')url.searchParams.set('view','reports');
+          else url.searchParams.delete('view');
+          url.searchParams.delete('id');url.searchParams.delete('returnTo');
+          history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+        }
+      }
+      return result;
+    };
+    wrapped.__devRouteAware=true;window.closePackageManager=wrapped;
+  }
+  var title=document.getElementById('uiTitle');
+  if(title&&!title.dataset.refreshActionBound){
+    title.dataset.refreshActionBound='true';title.setAttribute('role','button');title.setAttribute('tabindex','0');
+    title.setAttribute('title','Reload current page: '+location.href);
+    title.style.cursor='pointer';
+    title.addEventListener('click',function(){location.reload();});
+    title.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();location.reload();}});
+  }
+})();
+</script>
+
+<style id="dev-login-screen-scroll-fix">
+html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overflow:hidden!important;scrollbar-width:none!important}
+html:has(#reportLogin:not([hidden]))::-webkit-scrollbar,body:has(#reportLogin:not([hidden]))::-webkit-scrollbar,#reportLogin::-webkit-scrollbar,#reportLogin>div::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+#reportLogin{position:fixed!important;inset:0!important;box-sizing:border-box!important;min-height:100vh!important;min-height:100dvh!important;scrollbar-width:none!important}
+#reportLogin>div{max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;scrollbar-width:none!important}
+</style>
