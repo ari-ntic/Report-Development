@@ -7896,3 +7896,10 @@ body{background-color:#f1f5f9!important}
   sync();
 })();
 </script>
+
+<style id="dev-mobile-editor-header-spacing">
+@media (max-width:600px) {
+  #packageManagerOverlay .package-dialog { padding-top:max(6px,env(safe-area-inset-top)) !important; }
+  #packageManagerOverlay .package-dialog-head { padding:0 0 6px !important; margin:0 0 6px !important; min-height:0 !important; }
+}
+</style>
