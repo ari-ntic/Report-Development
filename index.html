@@ -7903,3 +7903,16 @@ body{background-color:#f1f5f9!important}
   #packageManagerOverlay .package-dialog-head { padding:0 0 6px !important; margin:0 0 6px !important; min-height:0 !important; }
 }
 </style>
+
+<style id="dev-mobile-editor-compact-layout-v2">
+@media (max-width:600px) {
+  #packageManagerOverlay .package-dialog { padding-top:max(4px,env(safe-area-inset-top)) !important; }
+  #packageManagerOverlay .package-dialog-head { min-height:0 !important; height:auto !important; padding:0 0 2px !important; margin:0 0 2px !important; }
+  #packageManagerOverlay #packageManagerTitle { margin:0 !important; line-height:1.2 !important; }
+  #packageManagerOverlay #packageManagerClose { width:40px !important; min-width:40px !important; height:40px !important; min-height:40px !important; padding:0 !important; }
+  #packageManagerOverlay .editor-urgencies { display:flex !important; flex-wrap:nowrap !important; gap:4px !important; width:100% !important; min-width:0 !important; }
+  #packageManagerOverlay .editor-urgencies .form-pill { display:flex !important; flex:1 1 0 !important; min-width:0 !important; justify-content:center !important; white-space:nowrap !important; padding:6px 3px !important; font-size:10px !important; line-height:1.15 !important; }
+  #packageManagerOverlay.keyboard-open .package-dialog { padding-bottom:0 !important; }
+  #packageManagerOverlay.keyboard-open .package-footer { margin-bottom:0 !important; padding-bottom:0 !important; }
+}
+</style>
