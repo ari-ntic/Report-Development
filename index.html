@@ -7916,3 +7916,71 @@ body{background-color:#f1f5f9!important}
   #packageManagerOverlay.keyboard-open .package-footer { margin-bottom:0 !important; padding-bottom:0 !important; }
 }
 </style>
+
+
+<style id="dev-mobile-editor-compact-layout-v3">
+@media (max-width:600px) {
+  #packageManagerOverlay .package-dialog { box-sizing:border-box !important; padding:1px 16px 0 !important; gap:0 !important; }
+  #packageManagerOverlay .package-dialog-head.gallery-modal-header { display:flex !important; align-items:center !important; justify-content:space-between !important; box-sizing:border-box !important; width:100% !important; height:auto !important; min-height:0 !important; flex:0 0 auto !important; margin:0 !important; padding:0 0 1px !important; border-bottom:1px solid var(--border-color,#e2e8f0) !important; }
+  #packageManagerOverlay #packageManagerTitle { margin:0 !important; padding:0 !important; line-height:1.15 !important; }
+  #packageManagerOverlay .package-dialog-head .gallery-modal-close-btn { display:grid !important; place-items:center !important; box-sizing:border-box !important; flex:0 0 32px !important; width:32px !important; min-width:32px !important; height:32px !important; min-height:32px !important; padding:0 !important; font-size:26px !important; line-height:1 !important; }
+  #packageManagerOverlay .package-scroll-body { padding-top:0 !important; scroll-padding-block:6px !important; }
+  #packageManagerOverlay .package-footer { margin:0 !important; padding:2px 0 0 !important; padding-bottom:0 !important; }
+  #packageManagerOverlay.keyboard-open .package-dialog { padding-bottom:0 !important; gap:0 !important; }
+  #packageManagerOverlay.keyboard-open .package-footer { margin:0 !important; padding:1px 0 0 !important; gap:6px !important; }
+}
+</style>
+<script id="dev-report-modal-origin-fix-v1">
+(function(){
+  'use strict';
+  var params = new URLSearchParams(window.location.search);
+  var restoringReport = params.get('view') === 'report';
+  var reportOrigin = params.get('returnTo') === 'reports' ? 'reports' : 'home';
+  window.__reportEditorReturnView = reportOrigin;
+  function reportsOpen(){var el=document.getElementById('reportsModalOverlay');return !!(el&&el.classList.contains('is-open'));}
+  ['pushState','replaceState'].forEach(function(method){
+    var original=window.history[method];
+    if(typeof original!=='function'||original.__reportOriginWrapped)return;
+    var wrapped=function(state,title,url){
+      if(url!=null){try{var next=new URL(String(url),window.location.href);if(next.searchParams.get('view')==='report')next.searchParams.set('returnTo',window.__reportEditorReturnView==='reports'?'reports':'home');else next.searchParams.delete('returnTo');url=next.pathname+next.search+next.hash;}catch(e){}}
+      return original.call(this,state,title,url);
+    };
+    wrapped.__reportOriginWrapped=true;window.history[method]=wrapped;
+  });
+  var originalOpen=window.openPackageManager;
+  if(typeof originalOpen==='function'&&!originalOpen.__reportOriginWrapped){
+    var wrappedOpen=async function(){if(!restoringReport)window.__reportEditorReturnView=reportsOpen()?'reports':'home';return originalOpen.apply(this,arguments);};
+    wrappedOpen.__reportOriginWrapped=true;window.openPackageManager=wrappedOpen;
+  }
+  var originalRouteOpen=window.openPackageManagerFromRoute;
+  if(typeof originalRouteOpen==='function'&&!originalRouteOpen.__reportOriginWrapped){
+    var wrappedRouteOpen=async function(){return originalRouteOpen.apply(this,arguments);};
+    wrappedRouteOpen.__reportOriginWrapped=true;window.openPackageManagerFromRoute=wrappedRouteOpen;
+  }
+  var originalClose=window.closePackageManager;
+  if(typeof originalClose==='function'&&!originalClose.__reportOriginWrapped){
+    var wrappedClose=function(){
+      var overlay=document.getElementById('packageManagerOverlay');
+      var wasOpen=!!(overlay&&!overlay.hidden);
+      var origin=window.__reportEditorReturnView;
+      var result=originalClose.apply(this,arguments);
+      if(wasOpen){
+        if(origin!=='reports'&&reportsOpen()&&typeof window.closeReportsModal==='function')window.closeReportsModal();
+        window.__reportEditorReturnView='home';restoringReport=false;
+      }
+      return result;
+    };
+    wrappedClose.__reportOriginWrapped=true;window.closePackageManager=wrappedClose;
+  }
+  var originalReportsOpen=window.openReportsModal;
+  if(typeof originalReportsOpen==='function'&&!originalReportsOpen.__reportOriginWrapped){
+    var wrappedReportsOpen=function(){var overlay=document.getElementById('packageManagerOverlay');if(overlay&&!overlay.hidden&&!packageBusy&&typeof window.closePackageManager==='function')window.closePackageManager();return originalReportsOpen.apply(this,arguments);};
+    wrappedReportsOpen.__reportOriginWrapped=true;window.openReportsModal=wrappedReportsOpen;
+  }
+  window.addEventListener('popstate',function(){
+    var p=new URLSearchParams(window.location.search);
+    restoringReport=p.get('view')==='report';
+    window.__reportEditorReturnView=p.get('returnTo')==='reports'?'reports':'home';
+  },true);
+})();
+</script>
