@@ -8128,3 +8128,53 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   #packageManagerOverlay textarea { -webkit-overflow-scrolling:auto !important; overscroll-behavior-y:auto !important; }
 }
 </style>
+
+
+<style id="dev-editor-textarea-scroll-handoff-restore">
+@media(max-width:600px){#packageManagerOverlay textarea{-webkit-overflow-scrolling:touch!important;overscroll-behavior-y:auto!important}}
+</style>
+<script id="dev-editor-textarea-to-modal-handoff">
+(function(){
+  var overlay=document.getElementById('packageManagerOverlay');
+  if(!overlay||overlay.__textareaModalHandoffBound)return;
+  overlay.__textareaModalHandoffBound=true;
+  var gesture=null;
+  function onStart(event){
+    gesture=null;
+    if(!event.touches||event.touches.length!==1)return;
+    var field=event.target&&event.target.closest?event.target.closest('textarea'):null;
+    if(!field||!overlay.contains(field))return;
+    var area=field.closest('.package-scroll-body');
+    if(!area)return;
+    var touch=event.touches[0],max=Math.max(0,field.scrollHeight-field.clientHeight),top=field.scrollTop;
+    var edge=max<=1?'both':top<=6?'top':(max-top)<=6?'bottom':null;
+    if(!edge)return;
+    gesture={field:field,area:area,edge:edge,startY:touch.clientY,lastY:touch.clientY,startedAt:Date.now(),handing:false};
+  }
+  function onMove(event){
+    if(!gesture||!event.touches||event.touches.length!==1)return;
+    var touch=event.touches[0],total=touch.clientY-gesture.startY,delta=touch.clientY-gesture.lastY;
+    if(!gesture.handing){
+      if(Date.now()-gesture.startedAt>=420)return;
+      if(Math.abs(total)<8)return;
+      var outward=gesture.edge==='both'||(gesture.edge==='top'&&total>0)||(gesture.edge==='bottom'&&total<0);
+      if(!outward)return;
+      var max=gesture.area.scrollHeight-gesture.area.clientHeight;
+      var canScroll=total>0?gesture.area.scrollTop>1:gesture.area.scrollTop<max-1;
+      if(!canScroll)return;
+      gesture.handing=true;
+      if(event.cancelable)event.preventDefault();
+      gesture.area.scrollTop-=total;
+      gesture.lastY=touch.clientY;
+      return;
+    }
+    if(event.cancelable)event.preventDefault();
+    gesture.area.scrollTop-=delta;
+    gesture.lastY=touch.clientY;
+  }
+  function onEnd(){gesture=null;}
+  overlay.addEventListener('touchstart',onStart,{capture:true,passive:true});
+  overlay.addEventListener('touchmove',onMove,{capture:true,passive:false});
+  ['touchend','touchcancel'].forEach(function(type){overlay.addEventListener(type,onEnd,{capture:true,passive:true});});
+})();
+</script>
