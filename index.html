@@ -7810,3 +7810,23 @@ body{background-color:#f1f5f9!important}
   #reportsSummaryPanel .summary-th-name, #reportsModalOverlay .table-wrapper thead th:nth-child(2) { white-space:normal !important; overflow-wrap:normal !important; word-break:normal !important; }
 }
 </style>
+
+        <!-- mobile editor modal revision -->
+        <style id="dev-mobile-report-editor-modal">
+          @media (max-width:600px) {
+  #packageManagerOverlay { position:fixed; inset:var(--report-editor-top,0px) 0 auto; width:100%; height:var(--report-editor-vh,100dvh); padding:0; align-items:stretch; justify-content:stretch; overflow:hidden; overscroll-behavior:contain; }
+  #packageManagerOverlay .package-dialog { display:flex; flex-direction:column; width:100%; max-width:none; height:var(--report-editor-vh,100dvh); max-height:var(--report-editor-vh,100dvh); min-height:0; margin:0; padding:max(12px,env(safe-area-inset-top)) 16px max(10px,env(safe-area-inset-bottom)); border-radius:0; overflow:hidden; }
+  #packageManagerOverlay .package-dialog-head { flex:0 0 auto; }
+  #packageManagerOverlay .package-scroll-body { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding-bottom:12px; }
+  #packageManagerOverlay .package-footer { flex:0 0 auto; margin-top:8px; padding-top:10px; padding-bottom:max(8px,env(safe-area-inset-bottom)); background:#fff; border-top:1px solid #e2e8f0; }
+  #packageManagerOverlay input,#packageManagerOverlay textarea,#packageManagerOverlay select { font-size:16px!important; }
+}
+</style>
+<script id="dev-mobile-report-editor-viewport">
+(function(){
+ var overlay=document.getElementById('packageManagerOverlay'); if(!overlay||overlay.__devViewportBound)return; overlay.__devViewportBound=true; var viewport=window.visualViewport;
+ function sync(){ if(!window.matchMedia('(max-width:600px)').matches||overlay.hidden){overlay.style.removeProperty('--report-editor-vh');overlay.style.removeProperty('--report-editor-top');return;} var height=viewport?viewport.height:window.innerHeight;var top=viewport?viewport.offsetTop:0;overlay.style.setProperty('--report-editor-vh',Math.max(0,height)+'px');overlay.style.setProperty('--report-editor-top',Math.max(0,top)+'px');}
+ if(viewport){viewport.addEventListener('resize',sync);viewport.addEventListener('scroll',sync);} window.addEventListener('resize',sync); new MutationObserver(sync).observe(overlay,{attributes:true,attributeFilter:['hidden']});
+ overlay.addEventListener('focusin',function(event){if(!window.matchMedia('(max-width:600px)').matches)return;var target=event.target;if(target&&target.matches('input,textarea,select'))window.setTimeout(function(){target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});},120);}); sync();
+})();
+</script>
