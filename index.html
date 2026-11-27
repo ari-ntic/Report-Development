@@ -7831,45 +7831,9 @@ body{background-color:#f1f5f9!important}
 })();
 </script>
 
-<script id="dev-mobile-report-editor-viewport-fix">
-(function(){
-  function bindEditorViewport(){
-    var overlay=document.getElementById('packageManagerOverlay');
-    if(!overlay)return false;
-    if(overlay.__devViewportBoundV2)return true;
-    overlay.__devViewportBoundV2=true;
-    var viewport=window.visualViewport;
-    function syncEditorViewport(){
-      if(!window.matchMedia('(max-width:600px)').matches||overlay.hidden){
-        overlay.style.removeProperty('--report-editor-vh');
-        overlay.style.removeProperty('--report-editor-top');
-        return;
-      }
-      var height=viewport?viewport.height:window.innerHeight;
-      var top=viewport?viewport.offsetTop:0;
-      overlay.style.setProperty('--report-editor-vh',Math.max(0,height)+'px');
-      overlay.style.setProperty('--report-editor-top',Math.max(0,top)+'px');
-    }
-    if(viewport){
-      viewport.addEventListener('resize',syncEditorViewport);
-      viewport.addEventListener('scroll',syncEditorViewport);
-    }
-    window.addEventListener('resize',syncEditorViewport);
-    new MutationObserver(syncEditorViewport).observe(overlay,{attributes:true,attributeFilter:['hidden']});
-    overlay.addEventListener('focusin',function(event){
-      if(!window.matchMedia('(max-width:600px)').matches)return;
-      var target=event.target;
-      if(target&&target.matches('input,textarea,select')){
-        window.setTimeout(function(){target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});},120);
-      }
-    });
-    syncEditorViewport();
-    return true;
-  }
-  if(bindEditorViewport())return;
-  var waitForEditor=new MutationObserver(function(){
-    if(bindEditorViewport())waitForEditor.disconnect();
-  });
-  waitForEditor.observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+<style id="dev-mobile-report-editor-live-viewport">
+@media (max-width:600px) {
+  #packageManagerOverlay { inset:var(--reports-top,0px) 0 auto !important; height:var(--reports-vh,100dvh) !important; }
+  #packageManagerOverlay .package-dialog { height:var(--reports-vh,100dvh) !important; max-height:var(--reports-vh,100dvh) !important; }
+}
+</style>
