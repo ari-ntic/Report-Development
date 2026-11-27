@@ -8053,7 +8053,7 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
  function put(el,p,v){el.style.setProperty(p,v,'important')}
  function restore(el,p,o){if(!el)return;if(o.value)el.style.setProperty(p,o.value,o.priority);else el.style.removeProperty(p)}
  function visible(el){return !!(el&&!el.hidden&&el.getAttribute('aria-hidden')!=='true'&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getClientRects().length)}
- function anyModalOpen(){return Array.from(document.querySelectorAll(modalSelector)).some(visible)}
+ function anyModalOpen(){return Array.from(document.querySelectorAll(modalSelector)).some(function(el){return el.id!=='reportLogin'&&visible(el)})}
  function lock(){if(locked||!body)return;locked=true;savedY=window.pageYOffset||window.scrollY||0;originals.htmlOverflow=remember(html,'overflow');originals.bodyOverflow=remember(body,'overflow');originals.htmlClass=html.classList.contains('dev-modal-scroll-locked');originals.bodyClass=body.classList.contains('dev-modal-scroll-locked');restorePage=getComputedStyle(body).position!=='fixed';if(restorePage){originals.position=remember(body,'position');originals.top=remember(body,'top');originals.left=remember(body,'left');originals.right=remember(body,'right');originals.width=remember(body,'width');put(body,'position','fixed');put(body,'top',(-savedY)+'px');put(body,'left','0');put(body,'right','0');put(body,'width','100%')}put(body,'overflow','hidden');put(html,'overflow','hidden');html.classList.add('dev-modal-scroll-locked');body.classList.add('dev-modal-scroll-locked')}
  function unlock(){if(!locked)return;locked=false;if(restorePage){restore(body,'overflow',originals.bodyOverflow);restore(body,'position',originals.position);restore(body,'top',originals.top);restore(body,'left',originals.left);restore(body,'right',originals.right);restore(body,'width',originals.width);window.scrollTo(0,savedY)}restore(html,'overflow',originals.htmlOverflow);if(!originals.bodyClass)body.classList.remove('dev-modal-scroll-locked');if(!originals.htmlClass)html.classList.remove('dev-modal-scroll-locked')}
  function sync(){if(anyModalOpen())lock();else unlock();var editor=document.getElementById('packageManagerOverlay');if(!editor)return;var active=document.activeElement,editing=!!(active&&editor.contains(active)&&active.matches('input:not([type=button]):not([type=submit]),textarea,[contenteditable=true]'));var vv=window.visualViewport,mobile=window.matchMedia('(max-width:600px)').matches;var keyboard=!!(vv&&window.innerHeight-vv.height>Math.max(110,window.innerHeight*.16));editor.classList.toggle('keyboard-open',!!(visible(editor)&&mobile&&editing&&keyboard))}
@@ -8091,7 +8091,7 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
   if(title&&!title.dataset.refreshActionBound){
     title.dataset.refreshActionBound='true';title.setAttribute('role','button');title.setAttribute('tabindex','0');
     title.setAttribute('title','Reload current page: '+location.href);
-    title.style.cursor='pointer';
+    title.style.cssText='display:inline-block;align-self:flex-start;width:fit-content;max-width:100%;cursor:pointer';
     title.addEventListener('click',function(){location.reload();});
     title.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();location.reload();}});
   }
@@ -8099,8 +8099,24 @@ html.dev-modal-scroll-locked,body.dev-modal-scroll-locked{overscroll-behavior:no
 </script>
 
 <style id="dev-login-screen-scroll-fix">
-html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overflow:hidden!important;scrollbar-width:none!important}
+html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overflow-x:hidden!important;overflow-y:auto!important;scrollbar-width:none!important}
 html:has(#reportLogin:not([hidden]))::-webkit-scrollbar,body:has(#reportLogin:not([hidden]))::-webkit-scrollbar,#reportLogin::-webkit-scrollbar,#reportLogin>div::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 #reportLogin{position:fixed!important;inset:0!important;box-sizing:border-box!important;min-height:100vh!important;min-height:100dvh!important;scrollbar-width:none!important}
 #reportLogin>div{max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;scrollbar-width:none!important}
 </style>
+<script id="dev-editor-caret-drag-scroll-guard">
+(function(){
+ var overlay=document.getElementById('packageManagerOverlay');if(!overlay||overlay.dataset.caretDragGuard)return;overlay.dataset.caretDragGuard='1';
+ var timer=0,armed=false,scroller=null,oldOverflow='',oldPriority='',savedTop=0,startX=0,startY=0;
+ function finish(){clearTimeout(timer);timer=0;armed=false;if(scroller){if(oldOverflow)scroller.style.setProperty('overflow-y',oldOverflow,oldPriority);else scroller.style.removeProperty('overflow-y');scroller.scrollTop=savedTop;scroller=null;}}
+ function textareaFor(event){var target=event.target&&event.target.closest?event.target.closest('textarea'):null;if(target&&overlay.contains(target))return target;var active=document.activeElement;if(active&&overlay.contains(active)&&active.matches&&active.matches('textarea')&&active.selectionStart!=null)return active;return null;}
+ overlay.addEventListener('touchstart',function(event){finish();if(!event.touches||event.touches.length!==1)return;var field=textareaFor(event);if(!field)return;var area=field.closest('.package-scroll-body');if(!area)return;var touch=event.touches[0];startX=touch.clientX;startY=touch.clientY;armed=true;timer=setTimeout(function(){if(!armed)return;scroller=area;savedTop=scroller.scrollTop;oldOverflow=scroller.style.getPropertyValue('overflow-y');oldPriority=scroller.style.getPropertyPriority('overflow-y');scroller.style.setProperty('overflow-y','hidden','important');scroller.scrollTop=savedTop;armed=false;timer=0;},450);},{capture:true,passive:true});
+ overlay.addEventListener('touchmove',function(event){if(!armed||!event.touches||!event.touches.length)return;var touch=event.touches[0];if(Math.abs(touch.clientX-startX)>12||Math.abs(touch.clientY-startY)>12)finish();},{capture:true,passive:true});
+ ['touchend','touchcancel'].forEach(function(name){overlay.addEventListener(name,finish,{capture:true,passive:true});});
+})();
+</script>
+<style id="dev-login-pull-refresh">
+html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;touch-action:pan-y!important}
+#reportLogin{touch-action:pan-y!important;overscroll-behavior-y:auto!important}
+</style>
+</body>
