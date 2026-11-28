@@ -110,6 +110,23 @@
       }
     }
 
+    /* Narrow desktop only: balance the form and right-side panels. */
+    @media (min-width: 1001px) and (max-width: 1400px) {
+      .app-layout { grid-template-columns: 3fr 3.5fr 3.5fr; }
+      .col-left .activity-item-top { flex-wrap: nowrap; gap: 4px; min-width: 0; }
+      .col-left .activity-item-person {
+        display: flex; align-items: center; flex: 1 1 auto; min-width: 0;
+        overflow: hidden; gap: 4px;
+      }
+      .col-left .activity-item-person-name {
+        display: block; min-width: 0; overflow: hidden; white-space: nowrap;
+        text-overflow: ellipsis; flex: 0 1 auto;
+      }
+      .col-left .activity-item-person .nationality-flag { flex: 0 0 auto; white-space: nowrap; }
+      .col-left .activity-item-person .nationality-flag-icon { margin-left: 2px; }
+      .col-left .activity-item-date { flex: 0 0 auto; white-space: nowrap; margin-left: auto; }
+    }
+
     .header-card {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       color: white;
@@ -6294,7 +6311,7 @@ function renderRecentFollowUps() {
     const date = item.tanggal || ''; // tanggal laporan; tanggal follow-up tetap di riwayat bawah catatan
     const author = item.authorName ? '<span class="activity-item-author">' + escapeHtml(authorText(item.authorName, false)) + '</span>' : '';
     const status = item.followStatus === '完了' ? revisionT().done : item.followStatus === '未対応' ? revisionT().pending : '';
-    return '<div class="activity-item"><div class="activity-item-top"><strong>' + escapeHtml(item.nama) + nationalityFlagHtml(item) +
+    return '<div class="activity-item"><div class="activity-item-top"><strong class="activity-item-person"><span class="activity-item-person-name">' + escapeHtml(item.nama) + '</span>' + nationalityFlagHtml(item) +
       '</strong><span class="activity-item-date">' + escapeHtml(date) + author + '</span></div>' +
       '<div class="company-cell">' + escapeHtml(item.perusahaan || '') + '</div>' +
       '<div class="activity-report-note">' + escapeHtml(item.catatan || '') + '</div>' +
