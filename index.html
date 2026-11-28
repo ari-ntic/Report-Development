@@ -122,6 +122,7 @@
         display: block; min-width: 0; overflow: hidden; white-space: nowrap;
         text-overflow: ellipsis; flex: 0 1 auto;
       }
+      .col-left .activity-item-person.is-name-truncated .nationality-flag { margin-left: -.35em; }
       .col-left .activity-item-person .nationality-flag { flex: 0 0 auto; white-space: nowrap; }
       .col-left .activity-item-person .nationality-flag-icon { margin-left: 0; }
       .col-left .activity-item-date { flex: 0 0 auto; white-space: nowrap; margin-left: 1.5em; }
@@ -6301,6 +6302,20 @@ function showRecentFollowUpMessage(message) {
   document.getElementById('activityList').innerHTML = '<div class="activity-empty">' + escapeHtml(message) + '</div>';
 }
 
+function updateRecentFollowUpNameTruncation() {
+  document.querySelectorAll('.col-left .activity-item-person').forEach(person => {
+    const name = person.querySelector('.activity-item-person-name');
+    person.classList.toggle('is-name-truncated', !!name && name.scrollWidth > name.clientWidth + 1);
+  });
+}
+function setupRecentFollowUpNameTruncation(container) {
+  if (!container._nameTruncationObserver && window.ResizeObserver) {
+    container._nameTruncationObserver = new ResizeObserver(() => requestAnimationFrame(updateRecentFollowUpNameTruncation));
+    container._nameTruncationObserver.observe(container);
+  }
+  requestAnimationFrame(updateRecentFollowUpNameTruncation);
+}
+
 function renderRecentFollowUps() {
   const container = document.getElementById('activityList');
   if (!recentFollowUpEntries.length) {
@@ -6321,6 +6336,7 @@ function renderRecentFollowUps() {
       '<button type="button" class="report-history-link" title="' + escapeHtml(revisionT().records) + '" aria-label="' + escapeHtml(revisionT().records) +
       '" onclick="openFollowUpModalById(\'' + escapeHtml(item.id) + '\')">↪</button></div></div>';
   }).join('');
+  setupRecentFollowUpNameTruncation(container);
   Array.from(container.children).forEach((card,index)=>appendCardHistory(card,recentFollowUpEntries[index]));
 }
 
