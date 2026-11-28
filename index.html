@@ -8743,3 +8743,37 @@ body { background-color:#eff6ff !important; }
   #packageManagerOverlay #editorSave { align-self:flex-end !important; margin-bottom:0 !important; }
 }
 </style>
+<style id="dev-home-panel-colors-and-editor-close-v2">
+/* Nearly-white gray for outer panels; soft green on inner report cards. */
+.app-layout > .col-left > .card,
+.app-layout > .col-center > .card,
+.app-layout > .col-right > .card,
+.app-layout > .col-bottom-reports > .card { background:#f8fafc !important; }
+#attentionPanel .attention-item { background:#f5faf6 !important; }
+#activityPanel .activity-item { background:#f5faf6 !important; border-color:#e5eee7 !important; }
+/* One inset soft-green card layer around the Latest Reports table. */
+#reportsSummaryPanel .table-wrapper {
+  box-sizing:border-box !important;
+  padding:8px !important;
+  border:1px solid #e5eee7 !important;
+  border-radius:10px !important;
+  background:#f5faf6 !important;
+}
+#reportsSummaryPanel .table-wrapper tbody td { background:transparent !important; }
+/* Vertically center X in the header; use the same 5px gap at the right edge. */
+@media (min-width:601px) {
+  #packageManagerOverlay .package-dialog-head.gallery-modal-header { position:relative !important; }
+  #packageManagerOverlay .package-dialog-head > .gallery-modal-close-btn {
+    top:50% !important;
+    right:5px !important;
+    transform:translateY(-50%) !important;
+  }
+}
+</style>
+
+<style id="dev-home-flag-panel-neutral-override-v1">
+.app-layout > .col-left > .card:has(.nationality-flag),
+.app-layout > .col-center > .card:has(.nationality-flag),
+.app-layout > .col-right > .card:has(.nationality-flag),
+.app-layout > .col-bottom-reports > .card:has(.nationality-flag) { background:#f8fafc !important; }
+</style>
