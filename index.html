@@ -9039,3 +9039,48 @@ body { background-color:#eff6ff !important; }
 /* Center only the loading message across the whole photo panel; preserve its current vertical position. */
 #photoPanel #photoGallery > .photo-empty { grid-column:1 / -1 !important; justify-self:center !important; width:max-content !important; max-width:100% !important; min-width:0 !important; margin-left:auto !important; margin-right:auto !important; text-align:center !important; box-sizing:border-box !important; }
 </style>
+
+
+<style id="dev-modal-title-left-centered-paging-v1">
+/* Development only: keep modal titles at the left, page/count information at true center, and X at the right. */
+@media (min-width:601px) {
+  #reportsModalOverlay .gallery-modal-header,
+  #galleryModalOverlay .gallery-modal-header {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
+    align-items:center !important;
+    justify-content:stretch !important;
+    column-gap:8px !important;
+    position:relative !important;
+  }
+  #reportsModalOverlay .gallery-modal-header > :first-child,
+  #galleryModalOverlay .gallery-modal-header > .gallery-modal-title {
+    grid-column:1 !important;
+    justify-self:start !important;
+    text-align:left !important;
+    min-width:0 !important;
+  }
+  #reportsModalOverlay .gallery-modal-header > :nth-child(2),
+  #galleryModalOverlay .gallery-modal-header > .photo-pagination {
+    grid-column:2 !important;
+    justify-self:center !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    text-align:center !important;
+  }
+  #galleryModalOverlay .gallery-modal-header > .gallery-modal-close-btn {
+    font-size:0 !important;
+  }
+  #galleryModalOverlay .gallery-modal-header > .gallery-modal-close-btn > * {
+    display:none !important;
+  }
+  #galleryModalOverlay .gallery-modal-header > .gallery-modal-close-btn::before {
+    content:"×" !important;
+    display:block !important;
+    font-family:Arial,sans-serif !important;
+    font-size:24px !important;
+    font-weight:400 !important;
+    line-height:1 !important;
+  }
+}
+</style>
