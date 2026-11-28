@@ -8233,3 +8233,18 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   }
 }
 </style>
+
+          
+<style id="dev-reports-desktop-column-widths">
+@media (min-width:1001px) {
+  #reportsModalOverlay .table-wrapper table { table-layout:fixed !important; }
+  #reportsModalOverlay .table-wrapper thead th:nth-child(1),
+  #reportsModalOverlay .table-wrapper tbody td:nth-child(1) { width:150px !important; min-width:150px !important; }
+  #reportsModalOverlay .table-wrapper thead th:nth-child(2),
+  #reportsModalOverlay .table-wrapper tbody td:nth-child(2) { width:300px !important; min-width:300px !important; }
+  #reportsModalOverlay .table-wrapper thead th:nth-child(3),
+  #reportsModalOverlay .table-wrapper tbody td:nth-child(3) { width:125px !important; min-width:125px !important; }
+  #reportsModalOverlay .table-wrapper tbody td.report-cell-person { overflow-wrap:anywhere !important; }
+  #reportsModalOverlay .table-wrapper tbody td.report-cell-person b { white-space:normal !important; overflow-wrap:anywhere !important; }
+}
+</style>
