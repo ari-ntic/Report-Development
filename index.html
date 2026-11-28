@@ -8929,3 +8929,13 @@ body { background-color:#eff6ff !important; }
   }
 }
 </style>
+
+<style id="dev-pc-editor-calendar-gap-balance-v1">
+@media (min-width:601px) {
+  /* Halve the note-to-date gap and use the same 5px rhythm at the report divider and follow-up calendar. */
+  #packageManagerOverlay .editor-field:has(#editorNote) { margin-bottom:5px !important; }
+  #packageManagerOverlay #editorReportDate > .event-date-section { margin:0 0 8px !important; padding:0 0 5px !important; }
+  #packageManagerOverlay #editorActions .editor-action-line { margin-bottom:5px !important; }
+  #packageManagerOverlay #editorActions .editor-action > .event-date-section { margin:0 !important; padding:0 !important; }
+}
+</style>
