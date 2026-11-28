@@ -8665,3 +8665,24 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   }
 }
 </style>
+
+
+<!-- Development: restore the centered desktop editor from All Reports while preserving its route and origin. -->
+<style id="dev-reports-editor-dialog-desktop-v2">
+@media (min-width:901px) {
+  #reportsModalOverlay.report-detail-open .gallery-modal-box > :not(#packageManagerOverlay) { visibility:visible !important; }
+  #reportsModalOverlay #packageManagerOverlay:not([hidden]) {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    height:100%; padding:16px; box-sizing:border-box; overflow:auto;
+    background:#0f172a88; border-radius:inherit; z-index:2;
+  }
+  #reportsModalOverlay #packageManagerOverlay .package-dialog {
+    width:100%; max-width:680px; height:auto;
+    max-height:calc(var(--reports-vh,100dvh) - 24px); margin:auto;
+    border-radius:12px; box-shadow:0 12px 40px #0f172a30;
+  }
+}
+</style>
+<script id="dev-hide-home-title-url-tooltip-v1">
+(function(){var title=document.getElementById('uiTitle');if(title)title.removeAttribute('title');})();
+</script>
