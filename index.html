@@ -8286,10 +8286,18 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
 <script id="dev-all-reports-hide-duplicate-author">
 (function(){
   function trimAuthor(){
+    var mobile=window.matchMedia('(max-width:900px)').matches;
     document.querySelectorAll('#reportsModalOverlay .report-cell-urgency .company-cell').forEach(function(cell){
       var text=(cell.textContent||'').trim();
-      var match=text.match(/^(\d{4}[/-]\d{1,2}[/-]\d{1,2})/);
-      if(match && text!==match[1]) cell.textContent=match[1];
+      var fullText=cell.dataset.authorDateFull||'';
+      var storedDate=fullText.match(/^(\d{4}[/-]\d{1,2}[/-]\d{1,2})/);
+      if(!fullText || (text!==fullText && !(storedDate && text===storedDate[1]))){
+        fullText=text;
+        cell.dataset.authorDateFull=fullText;
+      }
+      var dateMatch=fullText.match(/^(\d{4}[/-]\d{1,2}[/-]\d{1,2})/);
+      var desired=mobile&&dateMatch?dateMatch[1]:fullText;
+      if(text!==desired) cell.textContent=desired;
     });
   }
   var target=document.getElementById('recentTableBody');
@@ -8297,5 +8305,26 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
     trimAuthor();
     new MutationObserver(trimAuthor).observe(target,{childList:true,subtree:true,characterData:true});
   }
+  window.addEventListener('resize',trimAuthor,{passive:true});
 })();
 </script>
+
+
+<style id="dev-all-reports-mobile-row-v4">
+@media (max-width:900px) {
+  #recentTableBody > tr {
+    grid-template-columns:max-content minmax(0,1fr) minmax(0,max-content) !important;
+    column-gap:1px !important; row-gap:3px !important;
+    padding-left:0 !important; padding-right:0 !important;
+  }
+  #recentTableBody > tr > td { padding-left:1px !important; padding-right:1px !important; }
+  #recentTableBody > tr > .report-cell-urgency { grid-column:1 !important; white-space:nowrap; }
+  #recentTableBody > tr > .report-cell-person { grid-column:2 !important; }
+  #recentTableBody > tr > .report-cell-category {
+    grid-column:3 !important; justify-self:start !important; text-align:left !important;
+    width:auto !important; max-width:26vw !important; overflow-wrap:anywhere !important;
+  }
+  #recentTableBody > tr > .report-cell-note,
+  #recentTableBody > tr > td[colspan] { grid-column:1 / -1 !important; }
+}
+</style>
