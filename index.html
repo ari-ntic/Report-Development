@@ -2625,7 +2625,7 @@ input[type="checkbox"], input[type="file"], select, button:not(:disabled), a[hre
         </button>
       </div>
       <div class="photo-gallery-grid" id="photoGallery">
-        <div class="photo-empty" id="photoEmptyMsg" style="grid-column: 1 / -1;">読み込み中…</div>
+        <div class="photo-empty photo-loading" id="photoEmptyMsg" style="grid-column: 1 / -1;"><span class="photo-loading-label">読み込み中…</span></div>
       </div>
     </div>
 
@@ -8998,7 +8998,7 @@ body { background-color:#eff6ff !important; }
   #galleryModalOverlay .gallery-modal-close-btn:focus, #galleryModalOverlay .gallery-modal-close-btn:focus-visible,
   #todoModalOverlay .gallery-modal-close-btn:focus, #todoModalOverlay .gallery-modal-close-btn:focus-visible { outline:none !important; box-shadow:none !important; }
 }
-#photoGallery > .photo-empty { grid-column:1 / -1 !important; width:100% !important; min-height:100% !important; align-self:stretch !important; display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important; white-space:pre-line !important; }
+#photoGallery > .photo-empty.photo-loading { grid-column:1 / -1 !important; width:100% !important; min-height:100% !important; align-self:stretch !important; display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important; white-space:pre-line !important; } #photoGallery > .photo-empty.photo-loading > .photo-loading-label { display:inline-block !important; flex:0 0 auto !important; width:max-content !important; max-width:100% !important; text-align:center !important; }
 .dev-loading-dots { display:inline-flex; gap:.08em; margin-left:.06em; vertical-align:baseline; }
 .dev-loading-dot { opacity:.2; animation:dev-loading-dot-pulse 1.2s ease-in-out infinite; }
 .dev-loading-dot:nth-child(2) { animation-delay:.18s; }
