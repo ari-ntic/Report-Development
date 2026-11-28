@@ -8733,3 +8733,13 @@ body { background-color:#eff6ff !important; }
 .app-layout > .col-right > .card:has(.nationality-flag),
 .app-layout > .col-bottom-reports > .card:has(.nationality-flag) { background:#f0fdf4 !important; }
 </style>
+
+<style id="dev-pc-editor-button-edge-spacing-v1">
+@media (min-width:601px) {
+  /* Use the dialog 12px inner padding as shared edge spacing. */
+  #packageManagerOverlay .package-dialog-head > .gallery-modal-close-btn { top:0 !important; right:0 !important; }
+  #packageManagerOverlay .package-dialog > .package-footer { align-items:flex-end !important; }
+  #packageManagerOverlay #packageTrashReportButton,
+  #packageManagerOverlay #editorSave { align-self:flex-end !important; margin-bottom:0 !important; }
+}
+</style>
