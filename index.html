@@ -8178,3 +8178,38 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   ['touchend','touchcancel'].forEach(function(type){overlay.addEventListener(type,onEnd,{capture:true,passive:true});});
 })();
 </script>
+
+<script id="dev-report-origin-return-fix-v2">
+(function(){
+  'use strict';
+  function reportsOpen(){var el=document.getElementById('reportsModalOverlay');return !!(el&&!el.hidden&&el.classList.contains('is-open')&&getComputedStyle(el).display!=='none');}
+  var routeOpen=window.openPackageManagerFromRoute;
+  if(typeof routeOpen==='function'&&!routeOpen.__devPreserveReportOrigin){
+    var wrappedRouteOpen=async function(){
+      var params=new URLSearchParams(window.location.search);
+      if(params.get('view')!=='report')window.__reportEditorReturnView=reportsOpen()?'reports':'home';
+      return routeOpen.apply(this,arguments);
+    };
+    wrappedRouteOpen.__devPreserveReportOrigin=true;window.openPackageManagerFromRoute=wrappedRouteOpen;
+  }
+  var close=window.closePackageManager;
+  if(typeof close==='function'&&!close.__devRestoreReportOrigin){
+    var wrappedClose=function(){
+      var editor=document.getElementById('packageManagerOverlay');
+      var wasOpen=!!(editor&&!editor.hidden);
+      var params=new URLSearchParams(window.location.search);
+      var origin=(params.get('returnTo')==='reports'||window.__reportEditorReturnView==='reports')?'reports':'home';
+      var result=close.apply(this,arguments);
+      if(wasOpen&&origin==='reports'){
+        var url=new URL(window.location.href);
+        url.searchParams.set('view','reports');url.searchParams.delete('id');url.searchParams.delete('returnTo');
+        window.history.replaceState(window.history.state,'',url.pathname+url.search+url.hash);
+        window.__reportEditorReturnView='reports';
+        if(!reportsOpen()&&typeof window.openReportsModal==='function')window.openReportsModal(false);
+      }
+      return result;
+    };
+    wrappedClose.__devRestoreReportOrigin=true;window.closePackageManager=wrappedClose;
+  }
+})();
+</script>
