@@ -5957,12 +5957,12 @@ function changeLanguage(lang) {
         </td>
         <td class="summary-td-name" style="padding:10px; border-bottom:1px solid var(--border-color); vertical-align:top;">
           <div style="display:inline-flex; align-items:center; gap:3px;">
-            <b class="filter-trigger-text" title="${escapeHtml(item.nama)}の全報告を絞り込む" onclick="filterByTrainee('${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}${nationalityFlagHtml(item)}</b>${photoIcon}
+            <b class="filter-trigger-text" title="${escapeHtml(item.nama)}の全報告を絞り込む" onclick="filterByTrainee('${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}${nationalityFlagHtml(item)}</b><span class="photo-icon-name">${photoIcon}</span>
           </div>
           <span class="company-cell filter-trigger-text" title="${escapeHtml(item.perusahaan)}の全報告を絞り込む" onclick="filterByCompany('${escapeHtml(item.perusahaan)}')">🏢 ${escapeHtml(item.perusahaan)}</span>
         </td>
         <td class="summary-td-category" style="padding:10px; border-bottom:1px solid var(--border-color); vertical-align:top; white-space:nowrap;">
-          <b class="filter-trigger-text" title="カテゴリ [${escapeHtml(item.kategori)}] で絞り込む" onclick="filterByCategory('${escapeHtml(item.kategori)}')">${escapeHtml(item.kategori)}</b>
+          <b class="filter-trigger-text" title="カテゴリ [${escapeHtml(item.kategori)}] で絞り込む" onclick="filterByCategory('${escapeHtml(item.kategori)}')">${escapeHtml(item.kategori)}</b><span class="photo-icon-category">${photoIcon}</span>
         </td>
         <td class="summary-td-detail" style="padding:10px; border-bottom:1px solid var(--border-color); vertical-align:top; line-height:1.45;">
           ${escapeHtml(item.catatan)}
@@ -6006,12 +6006,12 @@ function changeLanguage(lang) {
         </td>
         <td class="report-cell-person">
           <div style="display:inline-flex; align-items:center;">
-            <b class="filter-trigger-text" title="${escapeHtml(item.nama)}で絞り込む" onclick="filterByTrainee('${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}${nationalityFlagHtml(item)}</b>${photoIcon}
+            <b class="filter-trigger-text" title="${escapeHtml(item.nama)}で絞り込む" onclick="filterByTrainee('${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}${nationalityFlagHtml(item)}</b><span class="photo-icon-name">${photoIcon}</span>
           </div>
           <span class="company-cell filter-trigger-text" title="${escapeHtml(item.perusahaan)}で絞り込む" onclick="filterByCompany('${escapeHtml(item.perusahaan)}')">🏢 ${escapeHtml(item.perusahaan)}</span>
         </td>
         <td class="report-cell-category">
-          <b class="filter-trigger-text" title="カテゴリ [${escapeHtml(item.kategori)}] で絞り込む" onclick="filterByCategory('${escapeHtml(item.kategori)}')">${escapeHtml(item.kategori)}</b>
+          <b class="filter-trigger-text" title="カテゴリ [${escapeHtml(item.kategori)}] で絞り込む" onclick="filterByCategory('${escapeHtml(item.kategori)}')">${escapeHtml(item.kategori)}</b><span class="photo-icon-category">${photoIcon}</span>
         </td>
         <td class="report-cell-note">
           <span class="report-note-text">${escapeHtml(item.catatan)}</span>
@@ -7350,7 +7350,7 @@ window.openPackageManagerFromRoute=openPackageManagerFromRoute;
 async function reloadPackageManager(){
  if(!packageEntry)return;const id=String(packageEntry.id||''),overlay=document.getElementById('packageManagerOverlay');if(!id||!overlay||overlay.hidden)return;
  const token={};overlay.__packageLoadToken=token;const isCurrent=()=>overlay.__packageLoadToken===token&&document.contains(overlay)&&!overlay.hidden&&packageEntry&&packageEntry.id===id;
- let timeoutId=0;packageLoaded=false;packagePhotos=[];packageHistory=[];reportEditorState=null;updateReportsControls();const body=document.getElementById('packageManagerBody');if(body)body.replaceChildren();
+ let timeoutId=0;packageLoaded=false;packagePhotos=[];packageHistory=[];reportEditorState=null;updateReportsControls();const body=document.getElementById('packageManagerBody');if(body){body.replaceChildren();const loading=document.createElement('div');loading.className='package-loading-state';loading.setAttribute('role','status');loading.innerHTML='<span class="package-loading-spinner" aria-hidden="true"></span><span>'+editorLabel('読み込み中…','Loading…')+'</span>';body.append(loading);}
  try{
   const result=await Promise.race([menuRpc('getJournalPackage',id),new Promise((_,reject)=>{timeoutId=window.setTimeout(()=>reject(Error('package-load-timeout')),30000);})]);
   if(!isCurrent())return;if(!result||!result.success)throw Error(result&&result.message||packageT().failed);
@@ -8317,7 +8317,7 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
     column-gap:1px !important; row-gap:3px !important;
     padding-left:0 !important; padding-right:0 !important;
   }
-  #recentTableBody > tr > td { padding-left:0 !important; padding-right:0 !important; }
+  #recentTableBody > tr > td { padding-left:1px !important; padding-right:1px !important; }
   #recentTableBody > tr > .report-cell-urgency { grid-column:1 !important; white-space:nowrap; }
   #recentTableBody > tr > .report-cell-person { grid-column:2 !important; }
   #recentTableBody > tr > .report-cell-category {
@@ -8326,5 +8326,27 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   }
   #recentTableBody > tr > .report-cell-note,
   #recentTableBody > tr > td[colspan] { grid-column:1 / -1 !important; }
+}
+</style>
+
+<style id="dev-mobile-report-four-fixes">
+/* Editor: show a clear loading state in the body while keeping the header and footer controls visible. */
+.package-loading-state{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 12px;color:#64748b;font-size:14px;text-align:center}.package-loading-spinner{width:48px;height:48px;border:5px solid #dbeafe;border-top-color:var(--primary,#2563eb);border-radius:50%;animation:package-loading-spin .75s linear infinite}@keyframes package-loading-spin{to{transform:rotate(360deg)}}
+/* On phones, move photo links below the category in both report lists. */
+.photo-icon-category{display:none!important}.photo-icon-name{display:inline-flex!important}
+@media(max-width:900px){
+ #reportsModalOverlay .photo-icon-name,#reportsSummaryPanel .photo-icon-name{display:none!important}
+ #reportsModalOverlay .photo-icon-category,#reportsSummaryPanel .photo-icon-category{display:inline-flex!important;align-items:center;margin-top:3px}
+ #reportsModalOverlay .report-cell-category{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px}
+ #reportsSummaryPanel .summary-td-category{display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:2px}
+ /* Remove the old fixed-width gutter, retaining roughly three characters after the urgency/date cell. */
+ #reportsModalOverlay .table-wrapper tbody td:first-child,#reportsModalOverlay .table-wrapper tbody td.report-cell-urgency{width:auto!important;min-width:0!important;padding-left:1px!important;padding-right:3ch!important}
+}
+/* Keep the home-page mobile headers consistent and readable; reclaim only their side padding. */
+@media(max-width:768px){
+ #reportsSummaryPanel thead tr{grid-template-columns:85px minmax(0,1fr) max-content!important;column-gap:1px!important}
+ #reportsSummaryPanel thead th{font-size:12px!important;font-weight:600!important;line-height:1.2!important;padding:2px 1px!important;min-width:0!important;box-sizing:border-box!important}
+ #reportsSummaryPanel .summary-th-urgency{width:auto!important;min-width:0!important;text-align:left!important;white-space:normal!important;font-size:12px!important}
+ #reportsSummaryPanel .summary-th-name,#reportsSummaryPanel .summary-th-category{font-size:12px!important}
 }
 </style>
