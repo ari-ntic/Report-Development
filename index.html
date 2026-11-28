@@ -119,10 +119,10 @@
         overflow: hidden; gap: 0;
       }
       .col-left .activity-item-person-name {
-        display: block; min-width: 0; overflow: hidden; white-space: nowrap;
-        text-overflow: ellipsis; flex: 0 1 auto;
+        display: block; min-width: 0; overflow: visible; white-space: nowrap;
+        text-overflow: clip; flex: 0 0 auto;
       }
-      .col-left .activity-item-person.is-name-truncated .nationality-flag { margin-left: -.35em; }
+      .col-left .activity-item-person-space { display: inline-block; flex: 0 0 auto; white-space: pre; }
       .col-left .activity-item-person .nationality-flag { flex: 0 0 auto; white-space: nowrap; }
       .col-left .activity-item-person .nationality-flag-icon { margin-left: 0; }
       .col-left .activity-item-date { flex: 0 0 auto; white-space: nowrap; margin-left: 1.5em; }
@@ -6303,9 +6303,26 @@ function showRecentFollowUpMessage(message) {
 }
 
 function updateRecentFollowUpNameTruncation() {
+  const narrowDesktop = window.matchMedia('(min-width: 1001px) and (max-width: 1400px)').matches;
   document.querySelectorAll('.col-left .activity-item-person').forEach(person => {
     const name = person.querySelector('.activity-item-person-name');
-    person.classList.toggle('is-name-truncated', !!name && name.scrollWidth > name.clientWidth + 1);
+    if (!name) return;
+    const fullName = name.dataset.fullName || name.textContent || '';
+    name.textContent = fullName;
+    if (!narrowDesktop) return;
+    const space = person.querySelector('.activity-item-person-space');
+    const flag = person.querySelector('.nationality-flag');
+    const available = Math.max(0, person.clientWidth - (space ? space.getBoundingClientRect().width : 0) - (flag ? flag.getBoundingClientRect().width : 0));
+    if (name.getBoundingClientRect().width <= available + 0.5) return;
+    const chars = Array.from(fullName);
+    let low = 0, high = chars.length;
+    while (low < high) {
+      const mid = Math.ceil((low + high) / 2);
+      name.textContent = chars.slice(0, mid).join('') + '...';
+      if (name.getBoundingClientRect().width <= available + 0.5) low = mid;
+      else high = mid - 1;
+    }
+    name.textContent = chars.slice(0, low).join('') + '...';
   });
 }
 function setupRecentFollowUpNameTruncation(container) {
@@ -6326,7 +6343,7 @@ function renderRecentFollowUps() {
     const date = item.tanggal || ''; // tanggal laporan; tanggal follow-up tetap di riwayat bawah catatan
     const author = item.authorName ? '<span class="activity-item-author">' + escapeHtml(authorText(item.authorName, false)) + '</span>' : '';
     const status = item.followStatus === '完了' ? revisionT().done : item.followStatus === '未対応' ? revisionT().pending : '';
-    return '<div class="activity-item"><div class="activity-item-top"><strong class="activity-item-person"><span class="activity-item-person-name">' + escapeHtml(item.nama) + '</span>' + nationalityFlagHtml(item) +
+    return '<div class="activity-item"><div class="activity-item-top"><strong class="activity-item-person"><span class="activity-item-person-name" data-full-name="' + escapeHtml(item.nama) + '">' + escapeHtml(item.nama) + '</span><span class="activity-item-person-space" aria-hidden="true"> </span>' + nationalityFlagHtml(item) +
       '</strong><span class="activity-item-date">' + escapeHtml(date) + author + '</span></div>' +
       '<div class="company-cell">' + escapeHtml(item.perusahaan || '') + '</div>' +
       '<div class="activity-report-note">' + escapeHtml(item.catatan || '') + '</div>' +
@@ -6340,9 +6357,26 @@ function renderRecentFollowUps() {
   Array.from(container.children).forEach((card,index)=>appendCardHistory(card,recentFollowUpEntries[index]));
 }
 
+function setupTodoScrollHandoff() {
+  const list = document.getElementById('todoListItems');
+  if (!list || list.dataset.scrollHandoffReady === '1') return;
+  list.dataset.scrollHandoffReady = '1';
+  list.addEventListener('wheel', function(event) {
+    if (!window.matchMedia('(min-width: 1001px)').matches || !event.deltaY) return;
+    const atTop = list.scrollTop <= 0 && event.deltaY < 0;
+    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 2 && event.deltaY > 0;
+    if (!atTop && !atBottom) return;
+    const root = document.scrollingElement || document.documentElement;
+    if (!root || root.scrollHeight <= window.innerHeight + 1) return;
+    event.preventDefault();
+    window.scrollBy(0, event.deltaY);
+  }, { passive: false });
+}
+
 function setupRevisionControls() {
   setupInputModeTextFit();
   setupMobilePanelLayout();
+  setupTodoScrollHandoff();
   setupFollowUpViewport();
   setupViewerExitHint();
   setupFixedHeaderFit();
