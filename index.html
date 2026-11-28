@@ -8720,3 +8720,16 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   #packageManagerOverlay #packageTrashReportButton { display:inline-flex !important; align-items:center !important; justify-content:center !important; width:auto !important; min-width:0 !important; min-height:40px !important; height:40px !important; margin-right:auto !important; padding:6px 12px !important; border:1px solid #f3caca !important; border-radius:8px !important; background:#fffafa !important; color:#a45151 !important; font-size:13px !important; line-height:1.25 !important; text-align:center !important; white-space:nowrap !important; }
 }
 </style>
+
+<style id="dev-home-layer-colors-v1">
+/* Development palette: page background, first-level dashboard panels, and flag-bearing panels only. */
+body { background-color:#eff6ff !important; }
+.app-layout > .col-left > .card,
+.app-layout > .col-center > .card,
+.app-layout > .col-right > .card,
+.app-layout > .col-bottom-reports > .card { background:#edf1f5 !important; }
+.app-layout > .col-left > .card:has(.nationality-flag),
+.app-layout > .col-center > .card:has(.nationality-flag),
+.app-layout > .col-right > .card:has(.nationality-flag),
+.app-layout > .col-bottom-reports > .card:has(.nationality-flag) { background:#f0fdf4 !important; }
+</style>
