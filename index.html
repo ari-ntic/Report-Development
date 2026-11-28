@@ -8248,3 +8248,54 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   #reportsModalOverlay .table-wrapper tbody td.report-cell-person b { white-space:normal !important; overflow-wrap:anywhere !important; }
 }
 </style>
+
+
+<!-- Development only: All Reports layout and author display -->
+<style id="dev-all-reports-layout-v3">
+/* Keep table adjustments limited to desktop; five more characters for urgency/date. */
+@media (min-width:1001px) {
+  #reportsModalOverlay .table-wrapper thead th:nth-child(1),
+  #reportsModalOverlay .table-wrapper tbody td:nth-child(1) { width:200px !important; min-width:200px !important; }
+}
+#reportsModalOverlay .table-wrapper tbody td.report-cell-category { text-align:center !important; }
+/* On phones, use the entire viewport for All Reports. */
+@media (max-width:900px) {
+  #reportsModalOverlay.gallery-modal-overlay { padding:0 !important; align-items:stretch !important; justify-content:stretch !important; }
+  #reportsModalOverlay > .gallery-modal-box {
+    width:100vw !important; max-width:none !important; margin:0 !important;
+    height:var(--reports-vh,100dvh) !important; max-height:var(--reports-vh,100dvh) !important;
+    border-radius:0 !important;
+  }
+}
+/* Match the compact close control used by the report editor. */
+@media (max-width:600px) {
+  #reportsModalOverlay .gallery-modal-header > .gallery-modal-close-btn {
+    display:inline-flex !important; flex:0 0 30px !important;
+    width:30px !important; min-width:30px !important; max-width:30px !important;
+    height:30px !important; min-height:30px !important; max-height:30px !important;
+    padding:0 !important; border:1px solid var(--border-color) !important;
+    border-radius:6px !important; background:transparent !important;
+    color:#475569 !important; font-size:0 !important; line-height:1 !important;
+    align-items:center !important; justify-content:center !important;
+  }
+  #reportsModalOverlay .gallery-modal-header > .gallery-modal-close-btn::before {
+    content:"×"; font-size:24px; line-height:1;
+  }
+}
+</style>
+<script id="dev-all-reports-hide-duplicate-author">
+(function(){
+  function trimAuthor(){
+    document.querySelectorAll('#reportsModalOverlay .report-cell-urgency .company-cell').forEach(function(cell){
+      var text=(cell.textContent||'').trim();
+      var match=text.match(/^(\d{4}[/-]\d{1,2}[/-]\d{1,2})/);
+      if(match && text!==match[1]) cell.textContent=match[1];
+    });
+  }
+  var target=document.getElementById('recentTableBody');
+  if(target){
+    trimAuthor();
+    new MutationObserver(trimAuthor).observe(target,{childList:true,subtree:true,characterData:true});
+  }
+})();
+</script>
