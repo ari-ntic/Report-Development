@@ -9033,3 +9033,9 @@ body { background-color:#eff6ff !important; }
 /* Center the photo panel loading text horizontally; keep its natural top position. */
 #photoGallery > .photo-empty { display:block !important; width:100% !important; min-height:0 !important; height:auto !important; text-align:center !important; }
 </style>
+
+
+<style id="dev-photo-loading-horizontal-center-v3">
+/* Center only the loading message across the whole photo panel; preserve its current vertical position. */
+#photoPanel #photoGallery > .photo-empty { grid-column:1 / -1 !important; justify-self:center !important; width:max-content !important; max-width:100% !important; min-width:0 !important; margin-left:auto !important; margin-right:auto !important; text-align:center !important; box-sizing:border-box !important; }
+</style>
