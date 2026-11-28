@@ -239,7 +239,12 @@
       throw new Error('Report editor entry point unavailable');
     }
     await window.openPackageManagerFromRoute(id);
-    return !!packageLoaded;
+    const editor = document.getElementById('packageManagerOverlay');
+    const editorHasTarget = isOpen(editor) &&
+      typeof packageEntry !== 'undefined' && packageEntry &&
+      String(packageEntry.id) === String(id);
+    /* The editor can be open while its report data is still loading. */
+    return editorHasTarget || !!packageLoaded;
   }
 
   function openReportsFallback(params, pageNo) {
