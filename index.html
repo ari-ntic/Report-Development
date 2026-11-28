@@ -4678,30 +4678,47 @@ function changeLanguage(lang) {
           target.url = res.url;
           target.fileId = res.fileId;
           renderPhotoThumbnails();
+          syncPhotoUploadWarning();
         } else {
-          handleUploadFailure(target);
+          handleUploadFailure(target, res && res.message);
         }
       })
-      .withFailureHandler(function() {
+      .withFailureHandler(function(err) {
         const target = selectedCompressedPhotos.find(p => p.uid === photoItem.uid);
-        if (target) handleUploadFailure(target);
+        if (target) handleUploadFailure(target, err && err.message);
       })
       .uploadSinglePhoto({ base64: photoItem.base64, mimeType: photoItem.mimeType }, currentFullName);
   }
 
-  function handleUploadFailure(photoItem) {
+  function syncPhotoUploadWarning() {
+    const warning = document.getElementById('photoWarningAboveSubmit');
+    if (!warning) return;
+    const failed = selectedCompressedPhotos.filter(p => p.status === 'error');
+    if (!failed.length) {
+      warning.hidden = true;
+      warning.textContent = '';
+      return;
+    }
+    const heading = currentLang === 'en' ? 'Photo upload failed:' : '写真をアップロードできませんでした：';
+    const details = failed.map((p, index) => (index + 1) + '. ' + String(p.lastUploadError || 'Unknown upload error'));
+    warning.textContent = heading + '\n' + details.join('\n');
+    warning.hidden = false;
+  }
+
+  function handleUploadFailure(photoItem, reason) {
+    if (reason) photoItem.lastUploadError = String(reason);
     if (photoItem.retryCount < MAX_AUTO_RETRIES) {
       photoItem.retryCount++;
       const backoffMs = Math.pow(2, photoItem.retryCount - 1) * 1000;
 
-      const spinnerEl = document.getElementById(`spinner_${photoItem.uid}`);
+      const spinnerEl = document.getElementById('spinner_' + photoItem.uid);
       if (spinnerEl) spinnerEl.style.opacity = '0';
 
       setTimeout(() => {
         const currentTarget = selectedCompressedPhotos.find(p => p.uid === photoItem.uid);
         if (!currentTarget) return;
 
-        const currentSpinner = document.getElementById(`spinner_${photoItem.uid}`);
+        const currentSpinner = document.getElementById('spinner_' + photoItem.uid);
         if (currentSpinner) currentSpinner.style.opacity = '1';
 
         performUploadWithAutoRetry(currentTarget);
@@ -4709,8 +4726,10 @@ function changeLanguage(lang) {
     } else {
       photoItem.status = 'error';
       renderPhotoThumbnails();
+      syncPhotoUploadWarning();
     }
   }
+
 
   function retryPhotoUploadByUid(uid) {
     if (isFormSubmissionLocked) return;
