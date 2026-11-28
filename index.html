@@ -9090,3 +9090,18 @@ body { background-color:#eff6ff !important; }
 <script id="dev-followup-author-space-v1">
 (function(){function clean(){var root=document.getElementById("activityPanel");if(!root)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),a=[];while(w.nextNode())a.push(w.currentNode);a.forEach(function(n){n.nodeValue=n.nodeValue.replace(/(\d{4}-\d{2}-\d{2})\s*[・·]\s+(?=\S)/g,"$1 ")})}clean();var p=document.getElementById("activityPanel");if(p)new MutationObserver(clean).observe(p,{subtree:true,childList:true,characterData:true})})();
 </script>
+
+<script id="dev-followup-author-space-v2">
+(function(){
+ var pattern=/^(\d{4}-\d{2}-\d{2})\s*[・·]\s*(\S+)$/;
+ function clean(){
+  var root=document.getElementById("activityPanel");if(!root)return;
+  Array.from(root.querySelectorAll("*")).reverse().forEach(function(el){
+   var raw=(el.textContent||"").trim(),m=raw.match(pattern);if(!m)return;
+   if(Array.from(el.children).some(function(ch){return pattern.test((ch.textContent||"").trim())}))return;
+   var next=m[1]+" "+m[2];if(raw!==next)el.textContent=next;
+  });
+ }
+ clean();var root=document.getElementById("activityPanel");if(root)new MutationObserver(clean).observe(root,{subtree:true,childList:true,characterData:true});
+})();
+</script>
