@@ -9084,3 +9084,9 @@ body { background-color:#eff6ff !important; }
   }
 }
 </style>
+<style id="dev-gallery-header-centering-fix-v1">
+@media(min-width:601px){#galleryModalOverlay .gallery-modal-header>.gallery-modal-title{grid-column:1!important;justify-self:start!important}#galleryModalOverlay .gallery-modal-header>#galleryPagination,#galleryModalOverlay .gallery-modal-header>.photo-pagination{grid-column:2!important;justify-self:center!important}#galleryModalOverlay .gallery-modal-header>.gallery-modal-close-btn{grid-column:3!important;justify-self:end!important}}
+</style>
+<script id="dev-followup-author-space-v1">
+(function(){function clean(){var root=document.getElementById("activityPanel");if(!root)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),a=[];while(w.nextNode())a.push(w.currentNode);a.forEach(function(n){n.nodeValue=n.nodeValue.replace(/(\d{4}-\d{2}-\d{2})\s*[・·]\s+(?=\S)/g,"$1 ")})}clean();var p=document.getElementById("activityPanel");if(p)new MutationObserver(clean).observe(p,{subtree:true,childList:true,characterData:true})})();
+</script>
