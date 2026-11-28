@@ -8939,3 +8939,15 @@ body { background-color:#eff6ff !important; }
   #packageManagerOverlay #editorActions .editor-action > .event-date-section { margin:0 !important; padding:0 !important; }
 }
 </style>
+
+
+<style id="dev-name-flag-photo-spacing-v1">
+/* Keep the photo badge one word-space after the flag in report rows. */
+#reportsSummaryPanel .photo-icon-name,
+#reportsModalOverlay .photo-icon-name { margin-left:1ch !important; }
+/* In narrow desktop recent-activity cards, keep the name-to-flag gap as tight as in Needs Follow-up. */
+@media (min-width:1001px) and (max-width:1400px) {
+  .col-left .activity-item-person-space { width:.35em !important; max-width:.35em !important; flex:0 0 .35em !important; overflow:hidden !important; white-space:normal !important; }
+  .col-left .activity-item-person .nationality-flag-icon { margin-left:0 !important; }
+}
+</style>
