@@ -8352,3 +8352,48 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
 </style>
 
 <style id="dev-mobile-report-empty-photo-gap-fix">#reportsModalOverlay .photo-icon-category:empty,#reportsSummaryPanel .photo-icon-category:empty{display:none!important}</style>
+
+
+<!-- Development: align All Reports mobile category/photo at right; show editor footer controls before data arrives. -->
+<style id="dev-all-reports-category-photo-right-v1">
+@media (max-width:900px) {
+  #reportsModalOverlay .report-cell-category {
+    justify-self:end !important;
+    align-items:flex-end !important;
+    text-align:right !important;
+  }
+}
+@media (max-width:600px) {
+  #packageManagerOverlay .package-footer:not(:has(#editorSave)) { display:grid !important; }
+}
+</style>
+<script id="dev-editor-footer-controls-early-v1">
+(function(){
+  var begin=window.beginPackageManager;
+  if(typeof begin==='function'&&!begin.__devEarlyFooter){
+    var wrappedBegin=function(){
+      var result=begin.apply(this,arguments);
+      var close=document.getElementById('packageManagerClose');
+      var footer=close&&close.closest('.package-footer');
+      if(footer&&!document.getElementById('editorSave')){
+        var save=document.createElement('button');
+        save.id='editorSave';save.type='button';save.className='btn-submit';save.disabled=true;
+        save.textContent=editorLabel('変更を保存','Save changes');
+        close.after(save);
+      }
+      return result;
+    };
+    wrappedBegin.__devEarlyFooter=true;window.beginPackageManager=wrappedBegin;
+  }
+  var setup=window.setupReportEditor;
+  if(typeof setup==='function'&&!setup.__devEnableEarlySave){
+    var wrappedSetup=function(){
+      var result=setup.apply(this,arguments);
+      var save=document.getElementById('editorSave');
+      if(save&&typeof save.onclick==='function')save.disabled=false;
+      return result;
+    };
+    wrappedSetup.__devEnableEarlySave=true;window.setupReportEditor=wrappedSetup;
+  }
+})();
+</script>
