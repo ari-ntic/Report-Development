@@ -150,6 +150,10 @@
       align-items: center;
     }
 
+    @media (min-width: 1001px) {
+      .header-card .header-titles h2, #uiTitle { font-size: 22px !important; line-height: 28px !important; height: 28px !important; }
+    }
+
     .side-panel-title {
       font-size: 13px;
       font-weight: 700;
@@ -6232,7 +6236,7 @@ function renderRecentFollowUps() {
     return;
   }
   container.innerHTML = recentFollowUpEntries.map(item => {
-    const date = item.followLegacy ? revisionT().legacy : item.followDate;
+    const date = item.tanggal || ''; // tanggal laporan; tanggal follow-up tetap di riwayat bawah catatan
     const author = item.authorName ? '<span class="activity-item-author">' + escapeHtml(authorText(item.authorName, false)) + '</span>' : '';
     const status = item.followStatus === '完了' ? revisionT().done : item.followStatus === '未対応' ? revisionT().pending : '';
     return '<div class="activity-item"><div class="activity-item-top"><strong>' + escapeHtml(item.nama) + nationalityFlagHtml(item) +
