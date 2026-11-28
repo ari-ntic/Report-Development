@@ -8824,3 +8824,20 @@ body { background-color:#eff6ff !important; }
 #reportsSummaryPanel .table-wrapper thead th { background-color:#dce8f5 !important; color:#33475e !important; }
 #reportsSummaryPanel .table-wrapper tbody td { background-color:transparent !important; }
 </style>
+
+
+<style id="dev-restore-gray-first-layer-v1">
+/* Keep the first card layer gray; the inset report/attention/activity surfaces stay soft blue. */
+.app-layout > .col-left > .card:has(.nationality-flag),
+.app-layout > .col-center > .card:has(.nationality-flag),
+.app-layout > .col-right > .card:has(.nationality-flag),
+.app-layout > .col-bottom-reports > .card:has(.nationality-flag) { background:#f8fafc !important; }
+</style>
+
+<style id="dev-brighter-blue-inset-panels-v1">
+#attentionPanel .attention-item,
+#activityPanel .activity-item,
+#reportsSummaryPanel .table-wrapper { background-color:#e6f1ff !important; border-color:#d0e2f8 !important; }
+#reportsSummaryPanel .table-wrapper thead tr,
+#reportsSummaryPanel .table-wrapper thead th { background-color:#d6e7fb !important; color:#33475e !important; }
+</style>
