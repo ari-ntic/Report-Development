@@ -8977,3 +8977,53 @@ body { background-color:#eff6ff !important; }
   #todoModalOverlay .gallery-modal-header > .gallery-modal-close-btn:focus-visible { outline:none !important; box-shadow:none !important; }
 }
 </style>
+
+
+
+          
+<style id="dev-shared-pc-modal-close-buttons-v2">
+@media (min-width:601px) {
+  #reportsModalOverlay .gallery-modal-header, #galleryModalOverlay .gallery-modal-header, #todoModalOverlay .gallery-modal-header { position:relative !important; padding-right:44px !important; }
+  #reportsModalOverlay .gallery-modal-header > .gallery-modal-close-btn, #galleryModalOverlay .gallery-modal-header > .gallery-modal-close-btn, #todoModalOverlay .gallery-modal-header > .gallery-modal-close-btn {
+    position:absolute !important; top:-5px !important; right:-9px !important; left:auto !important; transform:none !important;
+    display:inline-flex !important; align-items:center !important; justify-content:center !important; box-sizing:border-box !important;
+    width:32px !important; min-width:32px !important; max-width:32px !important; height:32px !important; min-height:32px !important; max-height:32px !important;
+    margin:0 !important; padding:0 !important; border:1px solid #efd1d1 !important; border-radius:8px !important;
+    background:#fff6f6 !important; color:#a34d4d !important; font-size:0 !important; line-height:1 !important;
+  }
+  #reportsModalOverlay .gallery-modal-close-btn::before, #todoModalOverlay .gallery-modal-close-btn::before { content:"×"; font-size:24px; line-height:1; }
+  #galleryModalOverlay .gallery-modal-close-btn > span:first-child { font-size:24px !important; line-height:1 !important; }
+  #galleryModalOverlay .gallery-modal-close-btn .close-btn-text { display:none !important; }
+  #reportsModalOverlay .gallery-modal-close-btn:focus, #reportsModalOverlay .gallery-modal-close-btn:focus-visible,
+  #galleryModalOverlay .gallery-modal-close-btn:focus, #galleryModalOverlay .gallery-modal-close-btn:focus-visible,
+  #todoModalOverlay .gallery-modal-close-btn:focus, #todoModalOverlay .gallery-modal-close-btn:focus-visible { outline:none !important; box-shadow:none !important; }
+}
+#photoGallery > .photo-empty { grid-column:1 / -1 !important; width:100% !important; min-height:100% !important; align-self:stretch !important; display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important; white-space:pre-line !important; }
+.dev-loading-dots { display:inline-flex; gap:.08em; margin-left:.06em; vertical-align:baseline; }
+.dev-loading-dot { opacity:.2; animation:dev-loading-dot-pulse 1.2s ease-in-out infinite; }
+.dev-loading-dot:nth-child(2) { animation-delay:.18s; }
+.dev-loading-dot:nth-child(3) { animation-delay:.36s; }
+@keyframes dev-loading-dot-pulse { 0%,20%,100% { opacity:.2; transform:translateY(0); } 45% { opacity:1; transform:translateY(-1px); } }
+@media(prefers-reduced-motion:reduce){.dev-loading-dot{animation:none;opacity:1}}
+</style>
+<script id="dev-text-loading-dots-v1">
+(function(){
+  var pattern=/(読み込み中|読み込み|loading|memuat)/i;
+  function scan(root){
+    var nodes=[];
+    if(root&&root.nodeType===1)nodes.push(root);
+    if(root&&root.querySelectorAll)nodes=nodes.concat(Array.from(root.querySelectorAll('body *')));
+    nodes.forEach(function(el){
+      if(el.dataset.devLoadingDots==='1'){if(el.querySelector(':scope > .dev-loading-dots'))return;delete el.dataset.devLoadingDots;}
+      if(el.children.length||el.matches('script,style,noscript,template'))return;
+      var text=(el.textContent||'').trim();if(!text||text.length>80||!pattern.test(text))return;
+      var label=text.replace(/[.…\s]+$/,'').trim();if(!label)return;
+      el.dataset.devLoadingDots='1';var dots=document.createElement('span');dots.className='dev-loading-dots';dots.setAttribute('aria-hidden','true');
+      for(var i=0;i<3;i++){var dot=document.createElement('span');dot.className='dev-loading-dot';dot.textContent='.';dots.append(dot);}
+      el.replaceChildren(document.createTextNode(label),dots);
+    });
+  }
+  function start(){scan(document);new MutationObserver(function(records){records.forEach(function(record){if(record.type==='characterData')scan(record.target.parentElement);else record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node);});});}).observe(document.body,{subtree:true,childList:true,characterData:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
