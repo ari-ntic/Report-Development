@@ -4034,9 +4034,9 @@ function changeLanguage(lang) {
     let nameIndex = 0;
 
     if (
-      parts[0] === "!" ||
+      parts[0] === "!" || parts[0] === "！" ||
       parts[0].toLowerCase() === "red" ||
-      parts[0] === "?" ||
+      parts[0] === "?" || parts[0] === "？" ||
       parts[0].toLowerCase() === "yellow"
     ) {
       prefix = parts[0] + " ";
@@ -4106,10 +4106,10 @@ function changeLanguage(lang) {
     let urgensi = "🟢 通常";
     let startIndex = 0;
 
-    if (parts[0] === "!" || parts[0].toLowerCase() === "red") {
+    if (parts[0] === "!" || parts[0] === "！" || parts[0].toLowerCase() === "red") {
       urgensi = "🔴 緊急";
       startIndex = 1;
-    } else if (parts[0] === "?" || parts[0].toLowerCase() === "yellow") {
+    } else if (parts[0] === "?" || parts[0] === "？" || parts[0].toLowerCase() === "yellow") {
       urgensi = "🟡 注意";
       startIndex = 1;
     }
@@ -4163,7 +4163,7 @@ function changeLanguage(lang) {
       document.getElementById('prevNama').style.color = '#16a34a';
 
       const remainingParts = parts.filter((_, idx) => idx < matchedTokenIndex || idx >= matchedTokenIndex + matchedWordCount);
-      if (urgensi !== "🟢 通常" && remainingParts.length > 0 && (remainingParts[0] === "!" || remainingParts[0] === "?" || remainingParts[0].toLowerCase() === "red" || remainingParts[0].toLowerCase() === "yellow")) {
+      if (urgensi !== "🟢 通常" && remainingParts.length > 0 && (remainingParts[0] === "!" || remainingParts[0] === "！" || remainingParts[0] === "?" || remainingParts[0] === "？" || remainingParts[0].toLowerCase() === "red" || remainingParts[0].toLowerCase() === "yellow")) {
         remainingParts.shift();
       }
 
