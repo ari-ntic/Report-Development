@@ -8213,3 +8213,23 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   }
 })();
 </script>
+
+          
+<style id="dev-reports-fullscreen-desktop">
+@media (min-width:1001px) {
+  #reportsModalOverlay.gallery-modal-overlay {
+    padding:0 !important;
+    align-items:stretch !important;
+    justify-content:stretch !important;
+  }
+  #reportsModalOverlay > .gallery-modal-box {
+    width:100vw !important;
+    max-width:none !important;
+    height:100vh !important;
+    height:100dvh !important;
+    max-height:100vh !important;
+    max-height:100dvh !important;
+    border-radius:0 !important;
+  }
+}
+</style>
