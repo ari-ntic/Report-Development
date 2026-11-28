@@ -8397,3 +8397,20 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   }
 })();
 </script>
+
+
+<style id="dev-mobile-report-category-top-align-v1">
+@media (max-width:900px) {
+  #reportsModalOverlay #recentTableBody > tr > .report-cell-category,
+  #reportsSummaryPanel tbody tr.summary-row > td.summary-td-category {
+    align-self:start !important;
+    justify-self:end !important;
+    align-items:flex-end !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    padding-top:2px !important;
+  }
+  #reportsModalOverlay .photo-icon-category,
+  #reportsSummaryPanel .photo-icon-category { margin-top:0 !important; }
+}
+</style>
