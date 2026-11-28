@@ -8641,3 +8641,27 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
   #reportsSummaryPanel tbody tr.summary-row > td { overflow-wrap:anywhere; }
 }
 </style>
+
+
+<!-- Development: restore PC report table header centering and category alignment without changing mobile layout. -->
+<style id="dev-pc-home-reports-header-category-align-v1">
+@media (min-width:1001px) {
+  #reportsSummaryPanel thead tr { align-items:stretch; min-height:38px; }
+  #reportsSummaryPanel thead th {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    height:auto !important;
+    min-height:38px !important;
+    max-height:none !important;
+    padding:6px 4px !important;
+    box-sizing:border-box !important;
+    text-align:center !important;
+    line-height:1.35 !important;
+  }
+  #reportsSummaryPanel tbody tr.summary-row > td.summary-td-category {
+    text-align:center !important;
+    vertical-align:middle !important;
+  }
+}
+</style>
