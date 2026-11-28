@@ -8619,34 +8619,25 @@ html:has(#reportLogin:not([hidden])),body:has(#reportLogin:not([hidden])){overfl
 </script>
 
 
-<style id="dev-reports-editor-dialog-desktop">
-/* On desktop, keep the All Reports list behind the same centered editor dialog used from Home. */
-@media (min-width: 901px) {
-  #reportsModalOverlay.report-detail-open .gallery-modal-box > :not(#packageManagerOverlay) {
-    visibility: visible !important;
+<!-- Development: keep a compact minimum name column on narrow three-column PC layouts, then grow it with report details at a 3:7 ratio. -->
+<style id="dev-pc-home-reports-name-detail-ratio-v1">
+@media (min-width:1001px) {
+  #reportsSummaryPanel .table-wrapper { width:100%; min-width:0; overflow:hidden !important; }
+  #reportsSummaryPanel table { display:block; width:100%; table-layout:fixed; }
+  #reportsSummaryPanel thead,
+  #reportsSummaryPanel tbody { display:block; width:100%; }
+  #reportsSummaryPanel thead tr,
+  #reportsSummaryPanel tbody tr.summary-row {
+    display:grid;
+    grid-template-columns:100px minmax(180px,3fr) 90px minmax(0,7fr);
+    width:100%;
   }
-  #reportsModalOverlay #packageManagerOverlay:not([hidden]) {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 16px;
-    box-sizing: border-box;
-    overflow: auto;
-    background: #0f172a88;
-    border-radius: inherit;
-    z-index: 2;
+  #reportsSummaryPanel thead th,
+  #reportsSummaryPanel tbody tr.summary-row > td {
+    width:auto !important;
+    min-width:0 !important;
+    box-sizing:border-box;
   }
-  #reportsModalOverlay #packageManagerOverlay .package-dialog {
-    width: 100%;
-    max-width: 680px;
-    height: auto;
-    max-height: calc(var(--reports-vh, 100dvh) - 24px);
-    margin: auto;
-    border-radius: 12px;
-    box-shadow: 0 12px 40px #0f172a30;
-  }
+  #reportsSummaryPanel tbody tr.summary-row > td { overflow-wrap:anywhere; }
 }
 </style>
