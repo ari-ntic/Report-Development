@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ページを開いています…</title>
+  <script>
+    (function () {
+      var parts = decodeURIComponent(location.pathname).split('/').filter(Boolean);
+      var repoIndex = parts.indexOf('Report-Development');
+      var tail = repoIndex >= 0 ? parts.slice(repoIndex + 1) : parts;
+      var has = function (names) { return tail.some(function (part) { return names.indexOf(part.toLowerCase()) >= 0; }); };
+      var view = '';
+      if (has(['report', 'reports', 'all-reports', '報告', '全報告'])) view = 'reports';
+      else if (has(['photo', 'photos', 'gallery', '写真', '全写真'])) view = 'photos';
+      else if (has(['todo', 'task', 'tasks', '全タスク'])) view = 'todo';
+      location.replace('/Report-Development/' + (view ? '?view=' + encodeURIComponent(view) : ''));
+    })();
+  </script>
+</head>
+<body></body>
+</html>
