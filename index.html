@@ -5337,7 +5337,7 @@ function changeLanguage(lang) {
               ${photoBadge}
               <span class="activity-item-category filter-trigger-badge" title="カテゴリ [${escapeHtml(item.kategori)}] で絞り込む" onclick="filterByCategory('${escapeHtml(item.kategori)}')">🏷️ ${escapeHtml(item.kategori)}</span>
             </div>
-            <span class="activity-item-date">${escapeHtml(item.tanggal)}${item.authorName ? ' · ' + escapeHtml(authorText(item.authorName, false)) : ''}</span>
+            <span class="activity-item-date">${escapeHtml(item.tanggal)}${item.authorName ? ' ' + escapeHtml(authorText(item.authorName, false)) : ''}</span>
           </div>
           <div class="activity-item-note-clean">${safeNote}</div>
           
