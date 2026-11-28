@@ -244,7 +244,7 @@
       typeof packageEntry !== 'undefined' && packageEntry &&
       String(packageEntry.id) === String(id);
     /* The editor can be open while its report data is still loading. */
-    return editorHasTarget || !!packageLoaded;
+    return editorHasTarget;
   }
 
   function openReportsFallback(params, pageNo) {
